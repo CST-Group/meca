@@ -874,4 +874,11 @@ public class MecaMind extends Mind {
 	public void setActivityCodelets(List<ActivityCodelet> activityCodelets) {
 		this.activityCodelets = activityCodelets;
 	}
+
+	/**
+	 * @param planningCodelet the planningCodelet to set
+	 */
+	public void setPlanningCodelet(IPlanningCodelet planningCodelet) {
+		this.planningCodelet = planningCodelet;
+	}
 }
