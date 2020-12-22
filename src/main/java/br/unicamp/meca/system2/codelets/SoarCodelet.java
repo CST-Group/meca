@@ -32,7 +32,7 @@ import br.unicamp.meca.memory.WorkingMemory;
  * @author W. Gibaut
  * @see br.unicamp.cst.bindings.soar.JSoarCodelet
  */
-public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCodelet {
+public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCodelet implements IPlanningCodelet {
 
 	private String id;
 
