@@ -625,7 +625,8 @@ public class MecaMind extends Mind {
 	/**
 	 * Sets the Soar Codelet.
 	 * 
-	 * @deprecated instead, add the SoarCodelet using the interface IPlanningCodelet
+	 * @deprecated instead, add the SoarCodelet using the setPlannningCodelet method.
+         *               The SoarCodelet implements the IPlanningCodelet interface 
 	 * @param soarCodelet
 	 *            the soarCodelet to set
 	 */
@@ -637,8 +638,8 @@ public class MecaMind extends Mind {
 	/**
 	 * Sets the Goal Codelet.
 	 * 
-	 * @param goalCodelet
-	 *            the goalCodelet to set
+	 * @param goalCodelets
+	 *            the set of goalCodelets to be mounted
 	 */
 	public void setGoalCodelets(List<GoalCodelet> goalCodelets) {
 		this.goalCodelets = goalCodelets;
