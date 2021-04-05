@@ -26,6 +26,7 @@ import br.unicamp.meca.mind.motivational.TestMotivationalFromPerceptionCodelet;
 import br.unicamp.meca.mind.motivational.TestMotivationalFromPlanningCodelet;
 import br.unicamp.meca.mind.motor.TestMotorCodelet;
 import br.unicamp.meca.mind.perceptual.TestPerceptualCodelet;
+import br.unicamp.meca.mind.planning.TestSoarCodelet;
 import br.unicamp.meca.mind.sensory.TestPerceptionSensoryCodelet;
 import br.unicamp.meca.mind.sensory.TestPlanningSensoryCodelet;
 import br.unicamp.meca.models.ActionSequencePlan;
@@ -36,6 +37,7 @@ import br.unicamp.meca.system1.codelets.IMotorCodelet;
 import br.unicamp.meca.system1.codelets.ISensoryCodelet;
 import br.unicamp.meca.system1.codelets.MotivationalCodelet;
 import br.unicamp.meca.system1.codelets.PerceptualCodelet;
+import br.unicamp.meca.system2.codelets.IPlanningCodelet;
 
 /**
  * @author andre
@@ -60,6 +62,8 @@ public class MecaMindTest {
 	private static List<MotivationalCodelet> motivationalCodelets;
 	
 	private static List<ActivityCodelet> activityCodelets;
+	
+	private static IPlanningCodelet planningCodelet;
 
 	@BeforeClass
 	public static void setup() throws InterruptedException {
@@ -135,6 +139,8 @@ public class MecaMindTest {
 
 		Test1ActivityCodelet test1ActivityCodelet = new Test1ActivityCodelet("Test1Activity", perceptualPerceptionCodeletsIds, testMotivationalFromPerceptionCodeletIds, testMotorCodelet.getId(), null);
 		activityCodelets.add(test1ActivityCodelet);
+		
+		planningCodelet = new TestSoarCodelet("soar");
 	
 
 		/*
@@ -145,6 +151,7 @@ public class MecaMindTest {
 		mecaMind.setPerceptualCodelets(perceptualCodelets);
 		mecaMind.setMotivationalCodelets(motivationalCodelets);
 		mecaMind.setActivityCodelets(activityCodelets);
+		mecaMind.setPlanningCodelet(planningCodelet);
 	
 
 	}

@@ -46,7 +46,7 @@ public abstract class BehaviorCodelet extends Codelet {
 	protected ArrayList<String> motivationalCodeletsIds;
 	protected ArrayList<Memory> driveMemories;
 
-	protected String soarCodeletId;
+	protected String planningCodeletId;
 	protected Memory broadcastMemory;
 	
 	protected ActionSequencePlan actionSequencePlan;
@@ -67,19 +67,19 @@ public abstract class BehaviorCodelet extends Codelet {
 	 * @param motivationalCodeletsIds
 	 *            the list of ids of the Motivational Codelets whose outputs
 	 *            will be read by this Behavior Codelet.
-	 * @param soarCodeletId
-	 *            the id of the Soar Codelet whose outputs will be read by this
+	 * @param planningCodeletId
+	 *            the id of the Planning Codelet whose outputs will be read by this
 	 *            Behavior Codelet.
 	 * @see Codelet
 	 */
 	public BehaviorCodelet(String id, ArrayList<String> perceptualCodeletsIds, ArrayList<String> motivationalCodeletsIds,
-			String soarCodeletId) {
+			String planningCodeletId) {
 		super();
 		setName(id);
 		this.id = id;
 		this.perceptualCodeletsIds = perceptualCodeletsIds;
 		this.motivationalCodeletsIds = motivationalCodeletsIds;
-		this.soarCodeletId = soarCodeletId;
+		this.planningCodeletId = planningCodeletId;
 	}
 		
 	@Override
@@ -115,7 +115,7 @@ public abstract class BehaviorCodelet extends Codelet {
 		}
 		
 		if(broadcastMemory == null) {
-			broadcastMemory = this.getBroadcast(soarCodeletId, index);
+			broadcastMemory = this.getBroadcast(planningCodeletId, index);
 		}
 		
 		if(actionSequencePlanMemoryContainer == null)
@@ -184,24 +184,24 @@ public abstract class BehaviorCodelet extends Codelet {
 
 
 	/**
-	 * Returns the id of the Soar Codelet whose outputs will be read by this
+	 * Returns the id of the Planning Codelet whose outputs will be read by this
 	 * Behavior Codelet.
 	 * 
-	 * @return the soarCodeletId
+	 * @return the planningCodeletId
 	 */
-	public String getSoarCodeletId() {
-		return soarCodeletId;
+	public String getPlanningCodeletId() {
+		return planningCodeletId;
 	}
 
 	/**
-	 * Sets the id of the Soar Codelet whose outputs will be read by this
+	 * Sets the id of the Planning Codelet whose outputs will be read by this
 	 * Behavior Codelet.
 	 * 
-	 * @param soarCodeletId
-	 *            the soarCodeletId to set
+	 * @param planningCodeletId
+	 *            the planningCodeletId to set
 	 */
-	public void setSoarCodeletId(String soarCodeletId) {
-		this.soarCodeletId = soarCodeletId;
+	public void setPlanningCodeletId(String planningCodeletId) {
+		this.planningCodeletId = planningCodeletId;
 	}
 
 	/**

@@ -14,6 +14,7 @@ package br.unicamp.meca.mind;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -41,8 +42,8 @@ import br.unicamp.meca.system2.codelets.EpisodicLearningCodelet;
 import br.unicamp.meca.system2.codelets.EpisodicRetrievalCodelet;
 import br.unicamp.meca.system2.codelets.ExpectationCodelet;
 import br.unicamp.meca.system2.codelets.GoalCodelet;
+import br.unicamp.meca.system2.codelets.IPlanningCodelet;
 import br.unicamp.meca.system2.codelets.SoarCodelet;
-import java.util.Iterator;
 
 /**
  * This class represents the MECA's agent mind.This is the main class to be used
@@ -74,7 +75,7 @@ public class MecaMind extends Mind {
 	private Memory actionSequencePlanMemoryContainer;
 	private Memory actionSequencePlanRequestMemoryContainer;
 	private ActivityTrackingCodelet activityTrackingCodelet;
-        private static HashMap<String,String> memoryGroups = new HashMap();
+    private static HashMap<String,String> memoryGroups = new HashMap();
 
 	/*
 	 * System 2
@@ -85,7 +86,7 @@ public class MecaMind extends Mind {
 	private EpisodicRetrievalCodelet episodicRetrievalCodelet;
 	private ExpectationCodelet expectationCodelet;
 	private ConsciousnessCodelet consciousnessCodelet;
-	private SoarCodelet soarCodelet;
+	private IPlanningCodelet planningCodelet;
 	private GoalCodelet goalCodelet;
 	private AppraisalCodelet appraisalCodelet;
 	private WorkingMemory workingMemory;
@@ -150,7 +151,7 @@ public class MecaMind extends Mind {
 		mountMotorCodelets();
 		mountAttentionCodelets();
 		mountWorkingMemory();
-		mountSoarCodelet();		
+		mountPlanningCodelet();		
 		mountMotivationalCodelets();
 		mountActionSequencePlanMemory();
 		mountBehaviorCodelets();
@@ -176,8 +177,8 @@ public class MecaMind extends Mind {
         }
 
 	private void mountModules() {
-		if (getSoarCodelet() != null) {
-			getPlansSubsystemModule().setjSoarCodelet(getSoarCodelet());
+		if (getPlanningCodelet() != null && getPlanningCodelet() instanceof SoarCodelet) {
+			getPlansSubsystemModule().setjSoarCodelet((SoarCodelet) getPlanningCodelet());
 		}
 	}
 
@@ -353,9 +354,9 @@ public class MecaMind extends Mind {
 							}
 						}
 					}
-					if (soarCodelet != null && soarCodelet.getId() != null && behaviorCodelet.getSoarCodeletId() != null) {
-						if (soarCodelet.getId().equalsIgnoreCase(behaviorCodelet.getSoarCodeletId())) {
-							behaviorCodelet.addBroadcasts(soarCodelet.getOutputs());
+					if (planningCodelet != null && planningCodelet.getId() != null && behaviorCodelet.getPlanningCodeletId() != null) {
+						if (planningCodelet.getId().equalsIgnoreCase(behaviorCodelet.getPlanningCodeletId())) {
+							behaviorCodelet.addBroadcasts(planningCodelet.getOutputs());
 						}
 					}
 					insertCodelet(behaviorCodelet);
@@ -415,9 +416,9 @@ public class MecaMind extends Mind {
 							}
 						}
 					}
-					if (soarCodelet != null && soarCodelet.getId() != null && activityCodelet.getSoarCodeletId() != null) {
-						if (soarCodelet.getId().equalsIgnoreCase(activityCodelet.getSoarCodeletId())) {
-							activityCodelet.addBroadcasts(soarCodelet.getOutputs());
+					if (planningCodelet != null && planningCodelet.getId() != null && activityCodelet.getPlanningCodeletId() != null) {
+						if (planningCodelet.getId().equalsIgnoreCase(activityCodelet.getPlanningCodeletId())) {
+							activityCodelet.addBroadcasts(planningCodelet.getOutputs());
 						}
 					}
 					activityCodelet.addInput(actionSequencePlanMemoryContainer);
@@ -465,11 +466,11 @@ public class MecaMind extends Mind {
 		}
 	}
 
-	private void mountSoarCodelet() {
-		if (soarCodelet != null) {
-			soarCodelet.addInput(createMemoryObject(WorkingMemory.WORKING_MEMORY_INPUT, getWorkingMemory()));
-			soarCodelet.addOutput(createMemoryObject(soarCodelet.getId()));
-			insertCodelet(soarCodelet);
+	private void mountPlanningCodelet() {
+		if (planningCodelet != null) {
+			planningCodelet.addInput(createMemoryObject(WorkingMemory.WORKING_MEMORY_INPUT, getWorkingMemory()));
+			planningCodelet.addOutput(createMemoryObject(planningCodelet.getId()));
+			insertCodelet((Codelet) planningCodelet);
 		}
 	}
 
@@ -612,11 +613,13 @@ public class MecaMind extends Mind {
 	/**
 	 * Sets the Soar Codelet.
 	 * 
+	 * @deprecated instead, add the SoarCodelet using the interface IPlanningCodelet
 	 * @param soarCodelet
 	 *            the soarCodelet to set
 	 */
+	@Deprecated
 	public void setSoarCodelet(SoarCodelet soarCodelet) {
-		this.soarCodelet = soarCodelet;
+		this.planningCodelet = soarCodelet;
 	}
 
 	/**
@@ -825,12 +828,12 @@ public class MecaMind extends Mind {
 	}
 
 	/**
-	 * Gets the Soar Codelet.
+	 * Gets the Planning Codelet.
 	 * 
-	 * @return the soarCodelet.
+	 * @return the planningCodelet.
 	 */
-	public SoarCodelet getSoarCodelet() {
-		return soarCodelet;
+	public IPlanningCodelet getPlanningCodelet() {
+		return planningCodelet;
 	}
 
 	/**
@@ -870,5 +873,12 @@ public class MecaMind extends Mind {
 	 */
 	public void setActivityCodelets(List<ActivityCodelet> activityCodelets) {
 		this.activityCodelets = activityCodelets;
+	}
+
+	/**
+	 * @param planningCodelet the planningCodelet to set
+	 */
+	public void setPlanningCodelet(IPlanningCodelet planningCodelet) {
+		this.planningCodelet = planningCodelet;
 	}
 }
