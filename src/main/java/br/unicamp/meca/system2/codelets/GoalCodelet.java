@@ -13,6 +13,8 @@
 package br.unicamp.meca.system2.codelets;
 
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryContainer;
+import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.meca.memory.WorkingMemory;
 
 /**
@@ -39,7 +41,19 @@ public abstract class GoalCodelet extends br.unicamp.cst.motivational.GoalCodele
 	 */
 	public GoalCodelet(String id) {
 		super(id);
+                setName(id);
 	}
+        
+        @Override
+    public void proc() {
+        if (isInit()) {
+            setHypotheticalSituation((AbstractObject) getInputHypotheticalSituationsMO().getI());
+            setGoal(goalGeneration(getHypotheticalSituation()));
+            ((MemoryContainer)getGoalMO()).setI(getGoal(),getActivation(),getId());
+        }
+
+        setInit(true);
+    }
         
         /**
      * @return the actionSequencePlanRequestMemoryContainer

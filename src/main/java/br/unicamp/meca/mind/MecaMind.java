@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.meca.memory.WorkingMemory;
@@ -106,11 +107,17 @@ public class MecaMind extends Mind {
                 createCodeletGroup("Motivational");
                 createCodeletGroup("Behavioral");
                 createCodeletGroup("ActivityTracking");
+                createCodeletGroup("Attention");
+                createCodeletGroup("Planning");
+                createCodeletGroup("Goal");
                 createMemoryGroup("Sensors");
                 createMemoryGroup("Actuators");
                 createMemoryGroup("Percepts");
                 createMemoryGroup("Drives");
                 createMemoryGroup("Plans");
+                createMemoryGroup("Goal");
+                createMemoryGroup("Attention");
+                createMemoryGroup("Planning");
 	}
 
 	/**
@@ -129,11 +136,17 @@ public class MecaMind extends Mind {
                 createCodeletGroup("Motivational");
                 createCodeletGroup("Behavioral");
                 createCodeletGroup("ActivityTracking");
+                createCodeletGroup("Attention");
+                createCodeletGroup("Planning");
+                createCodeletGroup("Goal");
                 createMemoryGroup("Sensors");
                 createMemoryGroup("Actuators");
                 createMemoryGroup("Percepts");
                 createMemoryGroup("Drives");
                 createMemoryGroup("Plans");
+                createMemoryGroup("Goal");
+                createMemoryGroup("Attention");
+                createMemoryGroup("Planning");
 	}
 
 	/**
@@ -486,10 +499,32 @@ public class MecaMind extends Mind {
         private void mountGoalCodelets() {
 		if (getGoalCodelets() != null) {
 			if (goalCodelets != null) {
-				for (GoalCodelet gc : goalCodelets) {
-                                    gc.setActionSequencePlanRequestMemoryContainer(actionSequencePlanRequestMemoryContainer);
-                                    gc.setWm(workingMemory);
-                                }
+                            // Create the Goal Memory Container
+                            //MemoryContainer goalMemoryContainer = createMemoryContainer("OUTPUT_GOAL_MEMORY");
+                            MemoryContainer goalMemoryContainer = createMemoryContainer("Goals");
+                            registerMemory(goalMemoryContainer,"Goal");
+                            //MemoryObject wmem = createMemoryObject("INPUT_HYPOTHETICAL_SITUATIONS_MEMORY");
+                            //registerMemory(wmem,"Goal");
+                            //wmem.setI(workingMemory.getCurrentPerceptionMemory().getI());
+                            for (GoalCodelet gc : goalCodelets) {
+                                // Insert the Goal Codelet in the Coderack
+                                insertCodelet(gc);
+                                // Mount internal variables
+                                gc.setActionSequencePlanRequestMemoryContainer(actionSequencePlanRequestMemoryContainer);
+                                gc.setWm(workingMemory);
+                                // Mount input
+                                gc.setInputHypotheticalSituationsMO(workingMemory.getCurrentPerceptionMemory());
+                                
+                                registerMemory(workingMemory.getCurrentPerceptionMemory(),"Goal");
+                                gc.addInput(actionSequencePlanRequestMemoryContainer);
+                                gc.addInput(workingMemory.getCurrentPerceptionMemory());
+                                //gc.addInput(wmem);
+                                // Mount output
+                                gc.setGoalMO(goalMemoryContainer);
+                                goalMemoryContainer.setI(null,0.0,gc.getId());
+                                gc.addOutput(goalMemoryContainer);
+                                //gc.addOutput(wmem);
+                            }
 			}
 		}
 	}
