@@ -1,7 +1,7 @@
 plugins {
 	id 'java-library-distribution'
   	id 'jacoco'
-  	id 'maven'
+  	id 'maven-publish'
 }
 
 group = 'com.github.CST-Group'
@@ -22,19 +22,28 @@ repositories {
     	url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
     }
     maven {
-      url "http://repository.springsource.com/maven/bundles/release"
+      url "https://repository.springsource.com/maven/bundles/release"
     }
     maven {
-      url "http://repository.springsource.com/maven/bundles/external"
+      url "https://repository.springsource.com/maven/bundles/external"
     }
 }
 
 dependencies {
-   api 'com.github.CST-Group:cst:codelet-profiler-SNAPSHOT'
-   //api ':cst:0.6.2-full'
+   //api group: "com.github.CST-Group", name: "cst", version: "codelet-tracking-SNAPSHOT", changing: true
+   
+    
+   //api('com.github.CST-Group:cst:ed2f1838dbfd7c46a7cbf2e922bc9a53e0a4e44c') 
+   api ':cst:0.6.2-full'
    testImplementation group: 'junit', name: 'junit', version: '4.12'
    testImplementation 'org.ros.rosjava_messages:std_msgs:0.5.11'
    testImplementation 'org.ros.rosjava_messages:rosjava_test_msgs:0.3.0'
+   
+}
+
+// forces all changing dependencies (i.e. SNAPSHOTs) to automagicially download
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
 jar {

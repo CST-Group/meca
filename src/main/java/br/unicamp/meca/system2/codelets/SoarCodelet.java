@@ -19,8 +19,7 @@ import java.util.List;
 
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.motivational.Goal;
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.wme.Idea;
 import br.unicamp.meca.memory.WorkingMemory;
 
 /**
@@ -110,11 +109,11 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	@Override
 	public void proc() {
 
-		AbstractObject il = processWorkingMemoryInput();
-		if (il.getCompositeList().size() == 0)
+		Idea il = processWorkingMemoryInput();
+		if (il.getL().size() == 0)
 			return;
 
-		setInputLinkAO(il);
+		this.setInputLinkIdea(il);
 
 		if (getDebugState() == 0)
 			getJsoar().step();
@@ -124,7 +123,8 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 		if (commandList != null) {
 			Collections.addAll(rawPlan, commandList);
 
-			workingMemory.getPlansMemory().setI(rawPlan);
+			//workingMemory.getPlansMemory().setI(rawPlan);
+                        workingMemory.getInternalMemory("PlansMemory").setI(rawPlan);
 
 			workingMemoryOutputMO.setI(workingMemory);
 
@@ -147,44 +147,49 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 * 
 	 * @return an abstract object represent an Input link.
 	 */
-	public AbstractObject processWorkingMemoryInput() {
+	public Idea processWorkingMemoryInput() {
 
-		AbstractObject il = new AbstractObject("InputLink");
+		Idea il = new Idea("InputLink");
 
-		AbstractObject currentPerceptionWO = (AbstractObject) workingMemory.getCurrentPerceptionMemory().getI() != null
-				? convertToAbstractObject((AbstractObject) workingMemory.getCurrentPerceptionMemory().getI(),
+		//AbstractObject currentPerceptionWO = (AbstractObject) workingMemory.getCurrentPerceptionMemory().getI() != null
+                Idea currentPerceptionWO = (Idea) workingMemory.getInternalMemory("CurrentPerceptionMemory").getI() != null
+				? convertToIdea((Idea) workingMemory.getInternalMemory("CurrentPerceptionMemory").getI(),
 						"CURRENT_PERCEPTION")
 				: null;
 
-		AbstractObject imaginationsWO = (List<AbstractObject>) workingMemory.getImaginationsMemory().getI() != null
-				? convertToAbstractObject((List<AbstractObject>) workingMemory.getImaginationsMemory().getI(),
+		//AbstractObject imaginationsWO = (List<AbstractObject>) workingMemory.getImaginationsMemory().getI() != null
+                Idea imaginationsWO = (List<Idea>) workingMemory.getInternalMemory("ImaginationsMemory").getI() != null
+				? convertToIdea((List<Idea>) workingMemory.getInternalMemory("ImaginationsMemory").getI(),
 						"IMAGINATION")
 				: null;
 
-		AbstractObject goalsWO = (List<Goal>) workingMemory.getGoalsMemory().getI() != null
-				? goalToAbstractObject((List<Goal>) workingMemory.getGoalsMemory().getI()) : null;
+		//AbstractObject goalsWO = (List<Goal>) workingMemory.getGoalsMemory().getI() != null
+                Idea goalsWO = (List<Goal>) workingMemory.getInternalMemory("GoalsMemory").getI() != null
+				? goalToIdea((List<Goal>) workingMemory.getInternalMemory("GoalsMemory").getI()) : null;
 
-		AbstractObject globalWO = (List<Memory>) workingMemory.getGlobalWorkspaceMemory().getI() != null
-				? globalWorkspaceToAbstractObject((List<Memory>) workingMemory.getGlobalWorkspaceMemory().getI())
+		//AbstractObject globalWO = (List<Memory>) workingMemory.getGlobalWorkspaceMemory().getI() != null
+                Idea globalWO = (List<Memory>) workingMemory.getInternalMemory("GlobalWorkspaceMemory").getI() != null
+				? globalWorkspaceToIdea((List<Memory>) workingMemory.getInternalMemory("GlobalWorkspaceMemory").getI())
 				: null;
 
-		AbstractObject epRecallWO = (List<Memory>) workingMemory.getEpisodicRecallMemory().getI() != null
-				? epRecallToAbstractObject((List<Memory>) workingMemory.getEpisodicRecallMemory().getI()) : null;
+		//AbstractObject epRecallWO = (List<Memory>) workingMemory.getEpisodicRecallMemory().getI() != null
+                Idea epRecallWO = (List<Memory>) workingMemory.getInternalMemory("EpisodicRecallMemory").getI() != null
+				? epRecallToIdea((List<Memory>) workingMemory.getInternalMemory("EpisodicRecallMemory").getI()) : null;
 
 		if (currentPerceptionWO != null)
-			il.addCompositePart(currentPerceptionWO);
+			il.add(currentPerceptionWO);
 
 		if (imaginationsWO != null)
-			il.addCompositePart(imaginationsWO);
+			il.add(imaginationsWO);
 
 		if (goalsWO != null)
-			il.addCompositePart(goalsWO);
+			il.add(goalsWO);
 
 		if (globalWO != null)
-			il.addCompositePart(globalWO);
+			il.add(globalWO);
 
 		if (epRecallWO != null)
-			il.addCompositePart(epRecallWO);
+			il.add(epRecallWO);
 
 		return il;
 	}
@@ -198,11 +203,11 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 *            the node name.
 	 * @return the abstract object.
 	 */
-	public AbstractObject convertToAbstractObject(AbstractObject abstractObject, String nodeName) {
+	public Idea convertToIdea(Idea abstractObject, String nodeName) {
 
-		AbstractObject abs = new AbstractObject(nodeName);
+		Idea abs = new Idea(nodeName);
 
-		abs.addCompositePart(abstractObject);
+		abs.add(abstractObject);
 
 		return abs;
 	}
@@ -210,18 +215,18 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	/**
 	 * Converts to abstract object.
 	 * 
-	 * @param abstractObjects
+	 * @param ideas
 	 *            the list of input abstract objects.
 	 * @param nodeNameTemplate
 	 *            the node name template.
 	 * @return the abstract object.
 	 */
-	public AbstractObject convertToAbstractObject(List<AbstractObject> abstractObjects, String nodeNameTemplate) {
+	public Idea convertToIdea(List<Idea> ideas, String nodeNameTemplate) {
 
-		AbstractObject configs = new AbstractObject(abstractObjects.toString());
+		Idea configs = new Idea(ideas.toString());
 
-		for (AbstractObject abs : abstractObjects) {
-			configs.addAggregatePart(convertToAbstractObject(abs, nodeNameTemplate));
+		for (Idea abs : ideas) {
+			configs.add(convertToIdea(abs, nodeNameTemplate));
 		}
 		return configs;
 	}
@@ -233,15 +238,15 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 *            the list of goals.
 	 * @return the Abstract Object representing the Goals.
 	 */
-	public AbstractObject goalToAbstractObject(List<Goal> goals) {
+	public Idea goalToIdea(List<Goal> goals) {
 
-		AbstractObject go = new AbstractObject("Goals");
+		Idea go = new Idea("Goals");
 
 		for (Goal goal : goals) {
 
-			AbstractObject temp = convertToAbstractObject(goal.getGoalAbstractObjects(), "GOAL");
-			temp.addProperty(new Property(goal.getId()));
-			go.addAggregatePart(temp);
+			Idea temp = convertToIdea(goal.getGoalIdeas(), "GOAL");
+			temp.add(new Idea(goal.getId()));
+			go.add(temp);
 		}
 		return go;
 	}
@@ -253,17 +258,17 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 *            the list of memories
 	 * @return the abstract object representing global workspace
 	 */
-	public AbstractObject globalWorkspaceToAbstractObject(List<Memory> global) {
+	public Idea globalWorkspaceToIdea(List<Memory> global) {
 
-		List<AbstractObject> globalAbstractObjects = null;
+		List<Idea> globalIdeass = null;
 
 		List<String> globalStrings = null;
 
 		for (Memory mem : global) {
 
-			if (isAbstractObject(mem.getI())) {
+			if (isIdea(mem.getI())) {
 
-				globalAbstractObjects.add((AbstractObject) mem.getI());
+				globalIdeass.add((Idea) mem.getI());
 			}
 		}
 
@@ -275,11 +280,11 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 			}
 		}
 
-		AbstractObject gAbs = convertToAbstractObject(globalAbstractObjects, "GLOBAL_WORKSPACE");
+		Idea gAbs = convertToIdea(globalIdeass, "GLOBAL_WORKSPACE");
 
 		for (String st : globalStrings) {
 
-			gAbs.addAggregatePart(new AbstractObject(st));
+			gAbs.add(new Idea(st));
 		}
 
 		return gAbs;
@@ -292,19 +297,19 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 *            the list of memories representing the episodic recall.
 	 * @return the Abstract Object representing an episodic recall.
 	 */
-	public AbstractObject epRecallToAbstractObject(List<Memory> episodicRecall) {
+	public Idea epRecallToIdea(List<Memory> episodicRecall) {
 
-		List<AbstractObject> epConfigurations = null;
+		List<Idea> epConfigurations = null;
 
 		for (Memory mem : episodicRecall) {
 
-			if (isAbstractObject(mem.getI())) {
+			if (isIdea(mem.getI())) {
 
-				epConfigurations.add((AbstractObject) mem.getI());
+				epConfigurations.add((Idea) mem.getI());
 			}
 		}
 
-		AbstractObject gConf = convertToAbstractObject(epConfigurations, "EPISODIC_RECALL_MEMORY");
+		Idea gConf = convertToIdea(epConfigurations, "EPISODIC_RECALL_MEMORY");
 
 		return gConf;
 	}
@@ -316,9 +321,9 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 *            the object to be tested
 	 * @return true if the obj is an abstract object.
 	 */
-	public boolean isAbstractObject(Object obj) {
+	public boolean isIdea(Object obj) {
 
-		if (obj.getClass() == AbstractObject.class)
+		if (obj.getClass() == Idea.class)
 			return true;
 		else
 			return false;

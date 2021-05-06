@@ -15,6 +15,8 @@ package br.unicamp.meca.memory;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents the MECA's Working Memory.
@@ -106,20 +108,22 @@ public class WorkingMemory {
 	 * The Working Memory Input constant.
 	 */
 	public static final String WORKING_MEMORY_INPUT = "WORKING_MEMORY_INPUT";
+        
+        private Map<String,Memory> wm = new HashMap();
 
 	private String id;
-	private Memory cueMemory;
-	private Memory plansMemory;
-	private Memory episodicRecallMemory;
-	private Memory globalWorkspaceMemory;
-	private Memory executivePlanMemory;
-
-	private Memory imaginationsMemory;
-	private Memory goalsMemory;
-	private Memory currentPerceptionMemory;
-	private Memory predictedSituationMemory;
-
-	private Memory nextActionMemory;
+//	private Memory cueMemory;
+//	private Memory plansMemory;
+//	private Memory episodicRecallMemory;
+//	private Memory globalWorkspaceMemory;
+//	private Memory executivePlanMemory;
+//
+//	private Memory imaginationsMemory;
+//	private Memory goalsMemory;
+//	private Memory currentPerceptionMemory;
+//	private Memory predictedSituationMemory;
+//
+//	private Memory nextActionMemory;
 
 	/**
 	 * Creates the MECA's Working Memory.
@@ -130,17 +134,28 @@ public class WorkingMemory {
 	public WorkingMemory(String id) {
 		setId(id);
 
-		setPlansMemory(new MemoryContainer());
-		setEpisodicRecallMemory(new MemoryContainer());
-		setGlobalWorkspaceMemory(new MemoryContainer());
-		setImaginationsMemory(new MemoryContainer());
-		setGoalsMemory(new MemoryContainer());
+                setInternalMemory("PlansMemory",new MemoryContainer("PlansMemory"));
+                setInternalMemory("EpisodicRecallMemory",new MemoryContainer("EpisodicRecallMemory"));
+		setInternalMemory("GlobalWorkspaceMemory",new MemoryContainer("GlobalWorkspaceMemory"));
+                setInternalMemory("ImaginationsMemory",new MemoryContainer("ImaginationsMemory"));
+                setInternalMemory("GoalsMemory",new MemoryContainer("GoalsMemory"));
+                
+//                setPlansMemory(new MemoryContainer());
+//		setEpisodicRecallMemory(new MemoryContainer());
+//		setGlobalWorkspaceMemory(new MemoryContainer());
+//		setImaginationsMemory(new MemoryContainer());
+//		setGoalsMemory(new MemoryContainer());
 
-		setCueMemory(new MemoryObject());
-		setNextActionMemory(new MemoryObject());
-		setExecutivePlanMemory(new MemoryObject());
-		setCurrentPerceptionMemory(new MemoryObject());
-		setPredictedSituationMemory(new MemoryObject());
+		setInternalMemory("CueMemory",new MemoryContainer("CueMemory"));
+                setInternalMemory("NextActionMemory",new MemoryContainer("NextActionMemory"));
+                setInternalMemory("ExecutivePlanMemory",new MemoryContainer("ExecutivePlanMemory"));
+                setInternalMemory("CurrentPerceptionMemory",new MemoryContainer("CurrentPerceptionMemory"));
+                setInternalMemory("PredictedSituationMemory",new MemoryContainer("PredictedSituationMemory"));
+//                setCueMemory(new MemoryObject());
+//		setNextActionMemory(new MemoryObject());
+//		setExecutivePlanMemory(new MemoryObject());
+//		setCurrentPerceptionMemory(new MemoryObject());
+//		setPredictedSituationMemory(new MemoryObject());
 	}
 
 	/**
@@ -162,193 +177,215 @@ public class WorkingMemory {
 		this.id = id;
 	}
 
-	/**
-	 * Gets the Cue Memory.
+        /**
+	 * Gets an Internal Sub Memory.
 	 * 
-	 * @return the Cue Memory.
+         * @param memName the name of the internal memory to get
+	 * @return the Internal Memory.
 	 */
-	public Memory getCueMemory() {
-		return cueMemory;
+	public Memory getInternalMemory(String memName) {
+                return(wm.get(memName));
 	}
 
 	/**
-	 * Sets the Cue Memory.
+	 * Sets an Internal Memory.
 	 * 
-	 * @param cueMemory
-	 *            the Cue memory to set.
+	 * @param memName the name of the internal memory
+         * @param memory the memory to be set
 	 */
-	public void setCueMemory(Memory cueMemory) {
-		this.cueMemory = cueMemory;
+	public void setInternalMemory(String memName, Memory memory) {
+		if (wm.containsKey(wm))
+                    wm.replace(memName, memory);
+                else wm.put(memName, memory);
 	}
-
-	/**
-	 * Gets the Plans Memory.
-	 * 
-	 * @return the Plans Memory.
-	 */
-	public Memory getPlansMemory() {
-		return plansMemory;
-	}
-
-	/**
-	 * Sets the Plans Memory.
-	 * 
-	 * @param plansMemory
-	 *            the plans Memory to set.
-	 */
-	public void setPlansMemory(Memory plansMemory) {
-		this.plansMemory = plansMemory;
-	}
-
-	/**
-	 * Gets the Episodic Recall Memory.
-	 * 
-	 * @return the Episodic Recall Memory.
-	 */
-	public Memory getEpisodicRecallMemory() {
-		return episodicRecallMemory;
-	}
-
-	/**
-	 * Sets the Episodic Recall Memory
-	 * 
-	 * @param episodicRecallMemory
-	 *            the Episodic Recall Memory to set.
-	 */
-	public void setEpisodicRecallMemory(Memory episodicRecallMemory) {
-		this.episodicRecallMemory = episodicRecallMemory;
-	}
-
-	/**
-	 * Gets the Global Workspace Memory
-	 * 
-	 * @return the Global Workspace Memory.
-	 */
-	public Memory getGlobalWorkspaceMemory() {
-		return globalWorkspaceMemory;
-	}
-
-	/**
-	 * Sets the Global Workspace Memory
-	 * 
-	 * @param globalWorkspaceMemory
-	 *            the Global Workspace memory to set.
-	 */
-	public void setGlobalWorkspaceMemory(Memory globalWorkspaceMemory) {
-		this.globalWorkspaceMemory = globalWorkspaceMemory;
-	}
-
-	/**
-	 * Gets the Executive Plan Memory.
-	 * 
-	 * @return the Executive Plan Memory.
-	 */
-	public Memory getExecutivePlanMemory() {
-		return executivePlanMemory;
-	}
-
-	/**
-	 * Sets the Executive Plan memory.
-	 * 
-	 * @param executivePlanMemory
-	 *            the Executive Plan Memory to set.
-	 */
-	public void setExecutivePlanMemory(Memory executivePlanMemory) {
-		this.executivePlanMemory = executivePlanMemory;
-	}
-
-	/**
-	 * Gets the Imaginations Memory.
-	 * 
-	 * @return the Imaginations Memory.
-	 */
-	public Memory getImaginationsMemory() {
-		return imaginationsMemory;
-	}
-
-	/**
-	 * Sets the Imaginations memory.
-	 * 
-	 * @param imaginationsMemory
-	 *            the imaginations memory to set.
-	 */
-	public void setImaginationsMemory(Memory imaginationsMemory) {
-		this.imaginationsMemory = imaginationsMemory;
-	}
-
-	/**
-	 * Gets the Goals Memory.
-	 * 
-	 * @return the Goals Memory.
-	 */
-	public Memory getGoalsMemory() {
-		return goalsMemory;
-	}
-
-	/**
-	 * Sets the Goals Memory.
-	 * 
-	 * @param goalsMemory
-	 *            the Goals Memory to set.
-	 */
-	public void setGoalsMemory(Memory goalsMemory) {
-		this.goalsMemory = goalsMemory;
-	}
-
-	/**
-	 * Gets the Current Perception Memory.
-	 * 
-	 * @return the current perception memory.
-	 */
-	public Memory getCurrentPerceptionMemory() {
-		return currentPerceptionMemory;
-	}
-
-	/**
-	 * Sets the current perception memory.
-	 * 
-	 * @param currentPerceptionMemory
-	 *            the current perception memory to set.
-	 */
-	public void setCurrentPerceptionMemory(Memory currentPerceptionMemory) {
-		this.currentPerceptionMemory = currentPerceptionMemory;
-	}
-
-	/**
-	 * Gets the predicted situation memory.
-	 * 
-	 * @return the predicte situation memory.
-	 */
-	public Memory getPredictedSituationMemory() {
-		return predictedSituationMemory;
-	}
-
-	/**
-	 * Sets the predicted situation memory.
-	 * 
-	 * @param predictedSituationMemory
-	 *            the predicted situation memory to set.
-	 */
-	public void setPredictedSituationMemory(Memory predictedSituationMemory) {
-		this.predictedSituationMemory = predictedSituationMemory;
-	}
-
-	/**
-	 * Gets the next action memory.
-	 * 
-	 * @return the next action memory.
-	 */
-	public Memory getNextActionMemory() {
-		return nextActionMemory;
-	}
-
-	/**
-	 * Sets the next action memory.
-	 * 
-	 * @param nextActionMemory
-	 *            the next action memory to set.
-	 */
-	public void setNextActionMemory(Memory nextActionMemory) {
-		this.nextActionMemory = nextActionMemory;
-	}
+        
+//	/**
+//	 * Gets the Cue Memory.
+//	 * 
+//	 * @return the Cue Memory.
+//	 */
+//	public Memory getCueMemory() {
+//		return cueMemory;
+//	}
+//
+//	/**
+//	 * Sets the Cue Memory.
+//	 * 
+//	 * @param cueMemory
+//	 *            the Cue memory to set.
+//	 */
+//	public void setCueMemory(Memory cueMemory) {
+//		this.cueMemory = cueMemory;
+//	}
+//
+//	/**
+//	 * Gets the Plans Memory.
+//	 * 
+//	 * @return the Plans Memory.
+//	 */
+//	public Memory getPlansMemory() {
+//		return plansMemory;
+//	}
+//
+//	/**
+//	 * Sets the Plans Memory.
+//	 * 
+//	 * @param plansMemory
+//	 *            the plans Memory to set.
+//	 */
+//	public void setPlansMemory(Memory plansMemory) {
+//		this.plansMemory = plansMemory;
+//	}
+//
+//	/**
+//	 * Gets the Episodic Recall Memory.
+//	 * 
+//	 * @return the Episodic Recall Memory.
+//	 */
+//	public Memory getEpisodicRecallMemory() {
+//		return episodicRecallMemory;
+//	}
+//
+//	/**
+//	 * Sets the Episodic Recall Memory
+//	 * 
+//	 * @param episodicRecallMemory
+//	 *            the Episodic Recall Memory to set.
+//	 */
+//	public void setEpisodicRecallMemory(Memory episodicRecallMemory) {
+//		this.episodicRecallMemory = episodicRecallMemory;
+//	}
+//
+//	/**
+//	 * Gets the Global Workspace Memory
+//	 * 
+//	 * @return the Global Workspace Memory.
+//	 */
+//	public Memory getGlobalWorkspaceMemory() {
+//		return globalWorkspaceMemory;
+//	}
+//
+//	/**
+//	 * Sets the Global Workspace Memory
+//	 * 
+//	 * @param globalWorkspaceMemory
+//	 *            the Global Workspace memory to set.
+//	 */
+//	public void setGlobalWorkspaceMemory(Memory globalWorkspaceMemory) {
+//		this.globalWorkspaceMemory = globalWorkspaceMemory;
+//	}
+//
+//	/**
+//	 * Gets the Executive Plan Memory.
+//	 * 
+//	 * @return the Executive Plan Memory.
+//	 */
+//	public Memory getExecutivePlanMemory() {
+//		return executivePlanMemory;
+//	}
+//
+//	/**
+//	 * Sets the Executive Plan memory.
+//	 * 
+//	 * @param executivePlanMemory
+//	 *            the Executive Plan Memory to set.
+//	 */
+//	public void setExecutivePlanMemory(Memory executivePlanMemory) {
+//		this.executivePlanMemory = executivePlanMemory;
+//	}
+//
+//	/**
+//	 * Gets the Imaginations Memory.
+//	 * 
+//	 * @return the Imaginations Memory.
+//	 */
+//	public Memory getImaginationsMemory() {
+//		return imaginationsMemory;
+//	}
+//
+//	/**
+//	 * Sets the Imaginations memory.
+//	 * 
+//	 * @param imaginationsMemory
+//	 *            the imaginations memory to set.
+//	 */
+//	public void setImaginationsMemory(Memory imaginationsMemory) {
+//		this.imaginationsMemory = imaginationsMemory;
+//	}
+//
+//	/**
+//	 * Gets the Goals Memory.
+//	 * 
+//	 * @return the Goals Memory.
+//	 */
+//	public Memory getGoalsMemory() {
+//		return goalsMemory;
+//	}
+//
+//	/**
+//	 * Sets the Goals Memory.
+//	 * 
+//	 * @param goalsMemory
+//	 *            the Goals Memory to set.
+//	 */
+//	public void setGoalsMemory(Memory goalsMemory) {
+//		this.goalsMemory = goalsMemory;
+//	}
+//
+//	/**
+//	 * Gets the Current Perception Memory.
+//	 * 
+//	 * @return the current perception memory.
+//	 */
+//	public Memory getCurrentPerceptionMemory() {
+//		return currentPerceptionMemory;
+//	}
+//
+//	/**
+//	 * Sets the current perception memory.
+//	 * 
+//	 * @param currentPerceptionMemory
+//	 *            the current perception memory to set.
+//	 */
+//	public void setCurrentPerceptionMemory(Memory currentPerceptionMemory) {
+//		this.currentPerceptionMemory = currentPerceptionMemory;
+//	}
+//
+//	/**
+//	 * Gets the predicted situation memory.
+//	 * 
+//	 * @return the predicte situation memory.
+//	 */
+//	public Memory getPredictedSituationMemory() {
+//		return predictedSituationMemory;
+//	}
+//
+//	/**
+//	 * Sets the predicted situation memory.
+//	 * 
+//	 * @param predictedSituationMemory
+//	 *            the predicted situation memory to set.
+//	 */
+//	public void setPredictedSituationMemory(Memory predictedSituationMemory) {
+//		this.predictedSituationMemory = predictedSituationMemory;
+//	}
+//
+//	/**
+//	 * Gets the next action memory.
+//	 * 
+//	 * @return the next action memory.
+//	 */
+//	public Memory getNextActionMemory() {
+//		return nextActionMemory;
+//	}
+//
+//	/**
+//	 * Sets the next action memory.
+//	 * 
+//	 * @param nextActionMemory
+//	 *            the next action memory to set.
+//	 */
+//	public void setNextActionMemory(Memory nextActionMemory) {
+//		this.nextActionMemory = nextActionMemory;
+//	}
 }

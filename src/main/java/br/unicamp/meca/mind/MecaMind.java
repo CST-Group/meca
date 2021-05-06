@@ -491,7 +491,8 @@ public class MecaMind extends Mind {
 	private void mountWorkingMemory() {
 		if (getWorkingMemory() != null) {
 			if (attentionCodeletSystem1 != null) {
-				getWorkingMemory().setCurrentPerceptionMemory(attentionCodeletSystem1.getOutputFilteredPerceptsMO());
+				//getWorkingMemory().setCurrentPerceptionMemory(attentionCodeletSystem1.getOutputFilteredPerceptsMO());
+                                getWorkingMemory().setInternalMemory("CurrentPerceptionMemory",attentionCodeletSystem1.getOutputFilteredPerceptsMO());
 			}
 		}
 	}
@@ -513,11 +514,14 @@ public class MecaMind extends Mind {
                                 gc.setActionSequencePlanRequestMemoryContainer(actionSequencePlanRequestMemoryContainer);
                                 gc.setWm(workingMemory);
                                 // Mount input
-                                gc.setInputHypotheticalSituationsMO(workingMemory.getCurrentPerceptionMemory());
+                                //gc.setInputHypotheticalSituationsMO(workingMemory.getCurrentPerceptionMemory());
+                                gc.setInputHypotheticalSituationsMO(workingMemory.getInternalMemory("CurrentPerceptionMemory"));
                                 
-                                registerMemory(workingMemory.getCurrentPerceptionMemory(),"Goal");
+                                //registerMemory(workingMemory.getCurrentPerceptionMemory(),"Goal");
+                                registerMemory(workingMemory.getInternalMemory("CurrentPerceptionMemory"),"Goal");
                                 gc.addInput(actionSequencePlanRequestMemoryContainer);
-                                gc.addInput(workingMemory.getCurrentPerceptionMemory());
+                                //gc.addInput(workingMemory.getCurrentPerceptionMemory());
+                                gc.addInput(workingMemory.getInternalMemory("CurrentPerceptionMemory"));
                                 //gc.addInput(wmem);
                                 // Mount output
                                 gc.setGoalMO(goalMemoryContainer);
