@@ -14,8 +14,9 @@ package br.unicamp.meca.memory;
 
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
-import br.unicamp.cst.core.entities.MemoryObject;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -198,6 +199,14 @@ public class WorkingMemory {
                     wm.replace(memName, memory);
                 else wm.put(memName, memory);
 	}
+        
+        public List<String> getInternalMemoryNames() {
+            ArrayList<String> imn = new ArrayList<>();
+            for (String s : wm.keySet()) {
+                imn.add(s);
+            }
+            return imn;
+        }
         
 //	/**
 //	 * Gets the Cue Memory.

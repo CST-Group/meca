@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 
 import br.unicamp.cst.core.entities.Memory;
-import br.unicamp.cst.motivational.Goal;
 import br.unicamp.cst.representation.wme.Idea;
 import br.unicamp.meca.memory.WorkingMemory;
 
@@ -149,7 +148,7 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 */
 	public Idea processWorkingMemoryInput() {
 
-		Idea il = new Idea("InputLink");
+		Idea il = Idea.createIdea("InputLink","",0);
 
 		//AbstractObject currentPerceptionWO = (AbstractObject) workingMemory.getCurrentPerceptionMemory().getI() != null
                 Idea currentPerceptionWO = (Idea) workingMemory.getInternalMemory("CurrentPerceptionMemory").getI() != null
@@ -164,8 +163,8 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 				: null;
 
 		//AbstractObject goalsWO = (List<Goal>) workingMemory.getGoalsMemory().getI() != null
-                Idea goalsWO = (List<Goal>) workingMemory.getInternalMemory("GoalsMemory").getI() != null
-				? goalToIdea((List<Goal>) workingMemory.getInternalMemory("GoalsMemory").getI()) : null;
+                Idea goalsWO = (List<Idea>) workingMemory.getInternalMemory("GoalsMemory").getI() != null
+				? goalToIdea((List<Idea>) workingMemory.getInternalMemory("GoalsMemory").getI()) : null;
 
 		//AbstractObject globalWO = (List<Memory>) workingMemory.getGlobalWorkspaceMemory().getI() != null
                 Idea globalWO = (List<Memory>) workingMemory.getInternalMemory("GlobalWorkspaceMemory").getI() != null
@@ -205,7 +204,7 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 */
 	public Idea convertToIdea(Idea abstractObject, String nodeName) {
 
-		Idea abs = new Idea(nodeName);
+		Idea abs = Idea.createIdea(nodeName,"",0);
 
 		abs.add(abstractObject);
 
@@ -223,7 +222,7 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 */
 	public Idea convertToIdea(List<Idea> ideas, String nodeNameTemplate) {
 
-		Idea configs = new Idea(ideas.toString());
+		Idea configs = Idea.createIdea(ideas.toString(),"",0);
 
 		for (Idea abs : ideas) {
 			configs.add(convertToIdea(abs, nodeNameTemplate));
@@ -238,15 +237,16 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 	 *            the list of goals.
 	 * @return the Abstract Object representing the Goals.
 	 */
-	public Idea goalToIdea(List<Goal> goals) {
+	public Idea goalToIdea(List<Idea> goals) {
 
-		Idea go = new Idea("Goals");
+		Idea go = Idea.createIdea("Goals","",0);
 
-		for (Goal goal : goals) {
+		for (Idea goal : goals) {
 
-			Idea temp = convertToIdea(goal.getGoalIdeas(), "GOAL");
-			temp.add(new Idea(goal.getId()));
-			go.add(temp);
+			//Idea temp = convertToIdea(goal.getGoalIdeas(), "GOAL");
+			//temp.add(new Idea(goal.getId()));
+			//go.add(temp);
+                        go.add(goal);
 		}
 		return go;
 	}
@@ -284,7 +284,7 @@ public abstract class SoarCodelet extends br.unicamp.cst.bindings.soar.JSoarCode
 
 		for (String st : globalStrings) {
 
-			gAbs.add(new Idea(st));
+			gAbs.add(Idea.createIdea(st,"",0));
 		}
 
 		return gAbs;

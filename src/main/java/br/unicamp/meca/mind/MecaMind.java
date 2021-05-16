@@ -118,6 +118,10 @@ public class MecaMind extends Mind {
                 createMemoryGroup("Goal");
                 createMemoryGroup("Attention");
                 createMemoryGroup("Planning");
+                createMemoryGroup("Working");
+                for (String s : getWorkingMemory().getInternalMemoryNames()) {
+                    registerMemory(getWorkingMemory().getInternalMemory(s),"Working");
+                }
 	}
 
 	/**
@@ -147,6 +151,10 @@ public class MecaMind extends Mind {
                 createMemoryGroup("Goal");
                 createMemoryGroup("Attention");
                 createMemoryGroup("Planning");
+                createMemoryGroup("Working");
+                for (String s : getWorkingMemory().getInternalMemoryNames()) {
+                    registerMemory(getWorkingMemory().getInternalMemory(s),"Working");
+                }
 	}
 
 	/**
@@ -473,7 +481,10 @@ public class MecaMind extends Mind {
 			/*
 			 * Outputs
 			 */
-			Memory attentionMemoryOutput = createMemoryObject(attentionCodeletSystem1.getId());
+			//Memory attentionMemoryOutput = createMemoryObject(attentionCodeletSystem1.getId());
+                        MemoryContainer currentperception = (MemoryContainer) workingMemory.getInternalMemory("CurrentPerceptionMemory");
+                        currentperception.setI(null,0d,attentionCodeletSystem1.getId());
+                        Memory attentionMemoryOutput = currentperception.getInternalMemory(attentionCodeletSystem1.getId());
 			attentionCodeletSystem1.addOutput(attentionMemoryOutput);
 			attentionCodeletSystem1.setOutputFilteredPerceptsMO(attentionMemoryOutput);
 			insertCodelet(attentionCodeletSystem1);
@@ -502,8 +513,9 @@ public class MecaMind extends Mind {
 			if (goalCodelets != null) {
                             // Create the Goal Memory Container
                             //MemoryContainer goalMemoryContainer = createMemoryContainer("OUTPUT_GOAL_MEMORY");
-                            MemoryContainer goalMemoryContainer = createMemoryContainer("Goals");
-                            registerMemory(goalMemoryContainer,"Goal");
+                            //MemoryContainer goalMemoryContainer = createMemoryContainer("Goals");
+                            //registerMemory(goalMemoryContainer,"Goal");
+                            MemoryContainer goalMemoryContainer = (MemoryContainer) workingMemory.getInternalMemory("GoalsMemory");
                             //MemoryObject wmem = createMemoryObject("INPUT_HYPOTHETICAL_SITUATIONS_MEMORY");
                             //registerMemory(wmem,"Goal");
                             //wmem.setI(workingMemory.getCurrentPerceptionMemory().getI());
@@ -524,6 +536,7 @@ public class MecaMind extends Mind {
                                 gc.addInput(workingMemory.getInternalMemory("CurrentPerceptionMemory"));
                                 //gc.addInput(wmem);
                                 // Mount output
+                                
                                 gc.setGoalMO(goalMemoryContainer);
                                 goalMemoryContainer.setI(null,0.0,gc.getId());
                                 gc.addOutput(goalMemoryContainer);
