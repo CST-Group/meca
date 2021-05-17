@@ -33,7 +33,7 @@ dependencies {
    //api group: "com.github.CST-Group", name: "cst", version: "codelet-tracking-SNAPSHOT", changing: true
    
     
-   api('com.github.CST-Group:cst:f34cf9d') 
+   api('com.github.CST-Group:cst:1d55d8c') 
    api 'org.ros.rosjava_messages:std_msgs:0.5.11'
    //api ':cst:0.6.2-full'
    testImplementation group: 'junit', name: 'junit', version: '4.12'
