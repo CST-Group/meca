@@ -494,7 +494,8 @@ public class MecaMind extends Mind {
 	private void mountPlanningCodelet() {
 		if (planningCodelet != null) {
 			planningCodelet.addInput(createMemoryObject(WorkingMemory.WORKING_MEMORY_INPUT, getWorkingMemory()));
-			planningCodelet.addOutput(createMemoryObject(planningCodelet.getId()));
+			//planningCodelet.addOutput(createMemoryObject(planningCodelet.getId()));
+                        planningCodelet.addOutput(getWorkingMemory().getInternalMemory("PlansMemory"));
 			insertCodelet((Codelet) planningCodelet);
 		}
 	}
