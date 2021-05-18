@@ -143,6 +143,7 @@ public class MecaMind extends Mind {
                 createCodeletGroup("Attention");
                 createCodeletGroup("Planning");
                 createCodeletGroup("Goal");
+                createCodeletGroup("Consciousness");
                 createMemoryGroup("Sensors");
                 createMemoryGroup("Actuators");
                 createMemoryGroup("Percepts");
@@ -179,6 +180,7 @@ public class MecaMind extends Mind {
 		mountActivityTrackingCodelet();
 		mountActivityCodelets();
                 mountGoalCodelets();
+                mountConsciousnessCodelet();
 		mountModules();
                 mountMemoryGroups();
 	}
@@ -546,6 +548,13 @@ public class MecaMind extends Mind {
 			}
 		}
 	}
+        
+        private void mountConsciousnessCodelet() {
+            if (consciousnessCodelet != null) {
+                registerCodelet(consciousnessCodelet,"Consciousness");
+                insertCodelet(consciousnessCodelet);
+            }
+        }
 
 	/**
 	 * Sets the Sensory Codelets.
