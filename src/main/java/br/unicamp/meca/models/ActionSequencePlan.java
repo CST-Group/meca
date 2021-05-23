@@ -49,7 +49,9 @@ public class ActionSequencePlan {
 	 * @return the current ActionStep 
 	 */
 	public ActionStep getCurrentActionStep() {
-		return actionIdSequence[currentActionIdIndex];
+		if (actionIdSequence != null && currentActionIdIndex < actionIdSequence.length)
+                    return actionIdSequence[currentActionIdIndex];
+                else return(null);
 	}
         
         /**
