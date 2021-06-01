@@ -175,10 +175,10 @@ public abstract class BehaviorCodelet extends Codelet {
 		
 		if(actionSequencePlan != null) {
 			((MemoryContainer) actionSequencePlanMemoryContainer).setI(actionSequencePlan,getActivation(),id);
-			((MemoryContainer) actionSequencePlanRequestMemoryContainer).setI(null,0.0d,id);
+			((MemoryContainer) actionSequencePlanRequestMemoryContainer).setI(null,0.0d,"R_"+id);
 		}else {
 			((MemoryContainer) actionSequencePlanMemoryContainer).setI(null,0.0d,id);
-			((MemoryContainer) actionSequencePlanRequestMemoryContainer).setI(id,getActivation(),id);
+			((MemoryContainer) actionSequencePlanRequestMemoryContainer).setI(id,getActivation(),"R_"+id);
 		}
 	}
 
