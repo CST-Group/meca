@@ -18,7 +18,7 @@ import java.util.List;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.wme.Idea;
 
 /**
  * This class represents a MECA Attention Codelet in System 1. Attention
@@ -44,8 +44,8 @@ public abstract class AttentionCodelet extends Codelet {
 	private Memory inputPerceptsMO;
 	private Memory outputFilteredPerceptsMO;
 
-	private List<AbstractObject> inputPercepts;
-	private AbstractObject outputFilteredPercepts;
+	private List<Idea> inputPercepts;
+	private Idea outputFilteredPercepts;
 	private List<String> perceptualCodeletsIds;
 
 	/**
@@ -62,7 +62,7 @@ public abstract class AttentionCodelet extends Codelet {
 		setName(id);
 		setId(id);
 		setPerceptualCodeletsIds(perceptualCodeletsIds);
-		setInputPercepts(new ArrayList<AbstractObject>());
+		setInputPercepts(new ArrayList<Idea>());
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public abstract class AttentionCodelet extends Codelet {
 
 		if (getInputPerceptsMO() == null) {
 			for (Memory perceptualMO : this.getInputs()) {
-				getInputPercepts().add((AbstractObject) perceptualMO.getI());
+				getInputPercepts().add((Idea) perceptualMO.getI());
 			}
 		}
 
@@ -96,13 +96,13 @@ public abstract class AttentionCodelet extends Codelet {
 	}
 
 	/**
-	 * Generates a filtered percept as an AbstractObject.
+	 * Generates a filtered percept as an Idea.
 	 * 
 	 * @param inputPercepts
 	 *            the list of input percepts.
-	 * @return filtered percept as an AbstractObject.
+	 * @return filtered percept as an Idea.
 	 */
-	public abstract AbstractObject generateFilteredPercepts(List<AbstractObject> inputPercepts);
+	public abstract Idea generateFilteredPercepts(List<Idea> inputPercepts);
 
 	/**
 	 * Gets the input Percept as a Memory Object.
@@ -147,7 +147,7 @@ public abstract class AttentionCodelet extends Codelet {
 	 * 
 	 * @return the list of input percepts.
 	 */
-	public List<AbstractObject> getInputPercepts() {
+	public List<Idea> getInputPercepts() {
 		return inputPercepts;
 	}
 
@@ -157,7 +157,7 @@ public abstract class AttentionCodelet extends Codelet {
 	 * @param inputPercepts
 	 *            the list of input percepts.
 	 */
-	public void setInputPercepts(List<AbstractObject> inputPercepts) {
+	public void setInputPercepts(List<Idea> inputPercepts) {
 		this.inputPercepts = inputPercepts;
 	}
 
@@ -166,7 +166,7 @@ public abstract class AttentionCodelet extends Codelet {
 	 * 
 	 * @return the output filtered percepts.
 	 */
-	public AbstractObject getOutputFilteredPercepts() {
+	public Idea getOutputFilteredPercepts() {
 		return outputFilteredPercepts;
 	}
 
@@ -176,7 +176,7 @@ public abstract class AttentionCodelet extends Codelet {
 	 * @param outputFilteredPercepts
 	 *            the output filtered percepts.
 	 */
-	public void setOutputFilteredPercepts(AbstractObject outputFilteredPercepts) {
+	public void setOutputFilteredPercepts(Idea outputFilteredPercepts) {
 		this.outputFilteredPercepts = outputFilteredPercepts;
 	}
 

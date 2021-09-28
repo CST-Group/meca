@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.meca.memory.WorkingMemory;
@@ -86,8 +87,8 @@ public class MecaMind extends Mind {
 	private EpisodicRetrievalCodelet episodicRetrievalCodelet;
 	private ExpectationCodelet expectationCodelet;
 	private ConsciousnessCodelet consciousnessCodelet;
+	private List<GoalCodelet> goalCodelets;
 	private IPlanningCodelet planningCodelet;
-	private GoalCodelet goalCodelet;
 	private AppraisalCodelet appraisalCodelet;
 	private WorkingMemory workingMemory;
 
@@ -106,11 +107,21 @@ public class MecaMind extends Mind {
                 createCodeletGroup("Motivational");
                 createCodeletGroup("Behavioral");
                 createCodeletGroup("ActivityTracking");
+                createCodeletGroup("Attention");
+                createCodeletGroup("Planning");
+                createCodeletGroup("Goal");
                 createMemoryGroup("Sensors");
                 createMemoryGroup("Actuators");
                 createMemoryGroup("Percepts");
                 createMemoryGroup("Drives");
                 createMemoryGroup("Plans");
+                createMemoryGroup("Goal");
+                createMemoryGroup("Attention");
+                createMemoryGroup("Planning");
+                createMemoryGroup("Working");
+                for (String s : getWorkingMemory().getInternalMemoryNames()) {
+                    registerMemory(getWorkingMemory().getInternalMemory(s),"Working");
+                }
 	}
 
 	/**
@@ -129,11 +140,22 @@ public class MecaMind extends Mind {
                 createCodeletGroup("Motivational");
                 createCodeletGroup("Behavioral");
                 createCodeletGroup("ActivityTracking");
+                createCodeletGroup("Attention");
+                createCodeletGroup("Planning");
+                createCodeletGroup("Goal");
+                createCodeletGroup("Consciousness");
                 createMemoryGroup("Sensors");
                 createMemoryGroup("Actuators");
                 createMemoryGroup("Percepts");
                 createMemoryGroup("Drives");
                 createMemoryGroup("Plans");
+                createMemoryGroup("Goal");
+                createMemoryGroup("Attention");
+                createMemoryGroup("Planning");
+                createMemoryGroup("Working");
+                for (String s : getWorkingMemory().getInternalMemoryNames()) {
+                    registerMemory(getWorkingMemory().getInternalMemory(s),"Working");
+                }
 	}
 
 	/**
@@ -157,6 +179,8 @@ public class MecaMind extends Mind {
 		mountBehaviorCodelets();
 		mountActivityTrackingCodelet();
 		mountActivityCodelets();
+                mountGoalCodelets();
+                mountConsciousnessCodelet();
 		mountModules();
                 mountMemoryGroups();
 	}
@@ -459,7 +483,10 @@ public class MecaMind extends Mind {
 			/*
 			 * Outputs
 			 */
-			Memory attentionMemoryOutput = createMemoryObject(attentionCodeletSystem1.getId());
+			//Memory attentionMemoryOutput = createMemoryObject(attentionCodeletSystem1.getId());
+                        MemoryContainer currentperception = (MemoryContainer) workingMemory.getInternalMemory("CurrentPerceptionMemory");
+                        currentperception.setI(null,0d,attentionCodeletSystem1.getId());
+                        Memory attentionMemoryOutput = currentperception.getInternalMemory(attentionCodeletSystem1.getId());
 			attentionCodeletSystem1.addOutput(attentionMemoryOutput);
 			attentionCodeletSystem1.setOutputFilteredPerceptsMO(attentionMemoryOutput);
 			insertCodelet(attentionCodeletSystem1);
@@ -469,7 +496,8 @@ public class MecaMind extends Mind {
 	private void mountPlanningCodelet() {
 		if (planningCodelet != null) {
 			planningCodelet.addInput(createMemoryObject(WorkingMemory.WORKING_MEMORY_INPUT, getWorkingMemory()));
-			planningCodelet.addOutput(createMemoryObject(planningCodelet.getId()));
+			//planningCodelet.addOutput(createMemoryObject(planningCodelet.getId()));
+                        planningCodelet.addOutput(getWorkingMemory().getInternalMemory("PlansMemory"));
 			insertCodelet((Codelet) planningCodelet);
 		}
 	}
@@ -477,10 +505,56 @@ public class MecaMind extends Mind {
 	private void mountWorkingMemory() {
 		if (getWorkingMemory() != null) {
 			if (attentionCodeletSystem1 != null) {
-				getWorkingMemory().setCurrentPerceptionMemory(attentionCodeletSystem1.getOutputFilteredPerceptsMO());
+				//getWorkingMemory().setCurrentPerceptionMemory(attentionCodeletSystem1.getOutputFilteredPerceptsMO());
+                                getWorkingMemory().setInternalMemory("CurrentPerceptionMemory",attentionCodeletSystem1.getOutputFilteredPerceptsMO());
 			}
 		}
 	}
+        
+        private void mountGoalCodelets() {
+		if (getGoalCodelets() != null) {
+			if (goalCodelets != null) {
+                            // Create the Goal Memory Container
+                            //MemoryContainer goalMemoryContainer = createMemoryContainer("OUTPUT_GOAL_MEMORY");
+                            //MemoryContainer goalMemoryContainer = createMemoryContainer("Goals");
+                            //registerMemory(goalMemoryContainer,"Goal");
+                            MemoryContainer goalMemoryContainer = (MemoryContainer) workingMemory.getInternalMemory("GoalsMemory");
+                            //MemoryObject wmem = createMemoryObject("INPUT_HYPOTHETICAL_SITUATIONS_MEMORY");
+                            //registerMemory(wmem,"Goal");
+                            //wmem.setI(workingMemory.getCurrentPerceptionMemory().getI());
+                            for (GoalCodelet gc : goalCodelets) {
+                                // Insert the Goal Codelet in the Coderack
+                                insertCodelet(gc);
+                                // Mount internal variables
+                                gc.setActionSequencePlanRequestMemoryContainer(actionSequencePlanRequestMemoryContainer);
+                                gc.setWm(workingMemory);
+                                // Mount input
+                                //gc.setInputHypotheticalSituationsMO(workingMemory.getCurrentPerceptionMemory());
+                                gc.setInputHypotheticalSituationsMO(workingMemory.getInternalMemory("CurrentPerceptionMemory"));
+                                
+                                //registerMemory(workingMemory.getCurrentPerceptionMemory(),"Goal");
+                                registerMemory(workingMemory.getInternalMemory("CurrentPerceptionMemory"),"Goal");
+                                gc.addInput(actionSequencePlanRequestMemoryContainer);
+                                //gc.addInput(workingMemory.getCurrentPerceptionMemory());
+                                gc.addInput(workingMemory.getInternalMemory("CurrentPerceptionMemory"));
+                                //gc.addInput(wmem);
+                                // Mount output
+                                
+                                gc.setGoalMO(goalMemoryContainer);
+                                goalMemoryContainer.setI(null,0.0,gc.getId());
+                                gc.addOutput(goalMemoryContainer);
+                                //gc.addOutput(wmem);
+                            }
+			}
+		}
+	}
+        
+        private void mountConsciousnessCodelet() {
+            if (consciousnessCodelet != null) {
+                registerCodelet(consciousnessCodelet,"Consciousness");
+                insertCodelet(consciousnessCodelet);
+            }
+        }
 
 	/**
 	 * Sets the Sensory Codelets.
@@ -613,7 +687,8 @@ public class MecaMind extends Mind {
 	/**
 	 * Sets the Soar Codelet.
 	 * 
-	 * @deprecated instead, add the SoarCodelet using the interface IPlanningCodelet
+	 * @deprecated instead, add the SoarCodelet using the setPlannningCodelet method.
+         *               The SoarCodelet implements the IPlanningCodelet interface 
 	 * @param soarCodelet
 	 *            the soarCodelet to set
 	 */
@@ -625,11 +700,11 @@ public class MecaMind extends Mind {
 	/**
 	 * Sets the Goal Codelet.
 	 * 
-	 * @param goalCodelet
-	 *            the goalCodelet to set
+	 * @param goalCodelets
+	 *            the set of goalCodelets to be mounted
 	 */
-	public void setGoalCodelet(GoalCodelet goalCodelet) {
-		this.goalCodelet = goalCodelet;
+	public void setGoalCodelets(List<GoalCodelet> goalCodelets) {
+		this.goalCodelets = goalCodelets;
 	}
 
 	/**
@@ -714,8 +789,8 @@ public class MecaMind extends Mind {
 	 * 
 	 * @return the Goal Codelet.
 	 */
-	public GoalCodelet getGoalCodelet() {
-		return goalCodelet;
+	public List<GoalCodelet> getGoalCodelets() {
+		return goalCodelets;
 	}
 
 	/**

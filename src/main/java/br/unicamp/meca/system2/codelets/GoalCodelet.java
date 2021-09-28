@@ -12,6 +12,11 @@
  ******************************************************************************/
 package br.unicamp.meca.system2.codelets;
 
+import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryContainer;
+import br.unicamp.cst.representation.wme.Idea;
+import br.unicamp.meca.memory.WorkingMemory;
+
 /**
  * This class represents MECA's Goal Codelet. Goals are created in MECA by the
  * Goal Codelet. The Goal Codelet uses the Current Perception in order to
@@ -25,6 +30,9 @@ package br.unicamp.meca.system2.codelets;
  */
 public abstract class GoalCodelet extends br.unicamp.cst.motivational.GoalCodelet {
 
+       private Memory actionSequencePlanRequestMemoryContainer;
+       private WorkingMemory wm;
+
 	/**
 	 * Creates a MECA's Goal Codelet.
 	 * 
@@ -33,5 +41,47 @@ public abstract class GoalCodelet extends br.unicamp.cst.motivational.GoalCodele
 	 */
 	public GoalCodelet(String id) {
 		super(id);
+                setName(id);
 	}
+        
+        @Override
+    public void proc() {
+        if (isInit()) {
+            setHypotheticalSituation((Idea) getInputHypotheticalSituationsMO().getI());
+            setGoal(goalGeneration(getHypotheticalSituation()));
+            ((MemoryContainer)getGoalMO()).setI(getGoal(),getActivation(),getId());
+        }
+
+        setInit(true);
+    }
+        
+        /**
+     * @return the actionSequencePlanRequestMemoryContainer
+     */
+    public Memory getActionSequencePlanRequestMemoryContainer() {
+        return actionSequencePlanRequestMemoryContainer;
+    }
+
+    /**
+     * @param actionSequencePlanRequestMemoryContainer the actionSequencePlanRequestMemoryContainer to set
+     */
+    public void setActionSequencePlanRequestMemoryContainer(Memory actionSequencePlanRequestMemoryContainer) {
+        this.actionSequencePlanRequestMemoryContainer = actionSequencePlanRequestMemoryContainer;
+    }
+
+    /**
+     * @return the wm
+     */
+    public WorkingMemory getWm() {
+        return wm;
+    }
+
+    /**
+     * @param wm the wm to set
+     */
+    public void setWm(WorkingMemory wm) {
+        this.wm = wm;
+    }
+        
+        
 }
