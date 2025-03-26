@@ -24,6 +24,7 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
+import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
 import br.unicamp.meca.memory.WorkingMemory;
 import br.unicamp.meca.system1.codelets.ActivityCodelet;
 import br.unicamp.meca.system1.codelets.ActivityTrackingCodelet;
@@ -76,7 +77,8 @@ public class MecaMind extends Mind {
 	private Memory actionSequencePlanMemoryContainer;
 	private Memory actionSequencePlanRequestMemoryContainer;
 	private ActivityTrackingCodelet activityTrackingCodelet;
-    private static HashMap<String,String> memoryGroups = new HashMap();
+        private static HashMap<String,String> memoryGroups = new HashMap();
+        private PlansSubsystemModule plansSubsystemModule = new PlansSubsystemModule();
 
 	/*
 	 * System 2
@@ -956,4 +958,8 @@ public class MecaMind extends Mind {
 	public void setPlanningCodelet(IPlanningCodelet planningCodelet) {
 		this.planningCodelet = planningCodelet;
 	}
+        
+        public PlansSubsystemModule getPlansSubsystemModule() {
+            return plansSubsystemModule;
+        }
 }

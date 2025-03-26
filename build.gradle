@@ -10,7 +10,7 @@ description = "The Multipurpose Enhanced Cognitive Architecture (MECA)"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.6.0'
+version = '0.7.0'
 
 repositories {
     flatDir {
@@ -18,21 +18,21 @@ repositories {
     }
     mavenCentral()
     maven { url 'https://jitpack.io' }
-    maven { 
-    	url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
+    maven {
+        url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
     }
     maven {
-      url "https://repository.springsource.com/maven/bundles/release"
-    }
-    maven {
-      url "https://repository.springsource.com/maven/bundles/external"
+        url "https://artifacts.camunda.com/artifactory/public/"
     }
 }
 
+configurations {
+    extraLibs
+}
+
 dependencies {
-   api('com.github.CST-Group:cst:0.7.0') 
+   api('com.github.CST-Group:cst-desktop:1.1.0') 
    api 'org.ros.rosjava_messages:std_msgs:0.5.11'
-   //api ':cst:0.6.2-full'
    testImplementation group: 'junit', name: 'junit', version: '4.12'
    testImplementation 'org.ros.rosjava_messages:std_msgs:0.5.11'
    testImplementation 'org.ros.rosjava_messages:rosjava_test_msgs:0.3.0'
@@ -53,21 +53,25 @@ jar {
 }
 
 task javadocJar(type: Jar) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc
+    from {
+    	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    javadoc.options.addStringOption('Xdoclint:none', '-quiet') // this is to avoid complaints about documentation missing parameter description
 }
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
-}
-task uberJar(type: Jar) {
-    archiveClassifier = 'full'
-    manifest {
-      attributes(
-        'Class-Path': configurations.runtimeClasspath.files.collect { it.getName() }.join(' ')    
-      )
-      
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
+}
+
+
+task uberJar(type: Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier = 'full'
     from sourceSets.main.output
     dependsOn configurations.runtimeClasspath
     from {
@@ -75,6 +79,7 @@ task uberJar(type: Jar) {
     }
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
+
 artifacts
 {
     archives javadocJar, sourcesJar, uberJar
@@ -90,6 +95,6 @@ publishing {
 
 jacocoTestReport {
     reports {
-        xml.enabled true
+        xml.required = true
     }
 }

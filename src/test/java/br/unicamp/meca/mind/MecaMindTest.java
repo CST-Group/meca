@@ -17,7 +17,7 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.util.MindViewer;
+import br.unicamp.cst.util.viewer.MindViewer;
 import br.unicamp.meca.mind.action.Test1ActivityCodelet;
 import br.unicamp.meca.mind.action.Test2ActivityCodelet;
 import br.unicamp.meca.mind.action.Test3ActivityCodelet;
