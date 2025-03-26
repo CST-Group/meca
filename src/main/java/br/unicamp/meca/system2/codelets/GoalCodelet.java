@@ -14,7 +14,7 @@ package br.unicamp.meca.system2.codelets;
 
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
-import br.unicamp.cst.representation.wme.Idea;
+import br.unicamp.cst.representation.idea.Idea;
 import br.unicamp.meca.memory.WorkingMemory;
 
 /**
