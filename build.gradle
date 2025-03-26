@@ -10,7 +10,7 @@ description = "The Multipurpose Enhanced Cognitive Architecture (MECA)"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.6.0'
+version = '0.7.0'
 
 repositories {
     flatDir {
@@ -33,7 +33,6 @@ configurations {
 dependencies {
    api('com.github.CST-Group:cst-desktop:1.1.0') 
    api 'org.ros.rosjava_messages:std_msgs:0.5.11'
-   //api ':cst:0.6.2-full'
    testImplementation group: 'junit', name: 'junit', version: '4.12'
    testImplementation 'org.ros.rosjava_messages:std_msgs:0.5.11'
    testImplementation 'org.ros.rosjava_messages:rosjava_test_msgs:0.3.0'
