@@ -34,6 +34,7 @@ public class RosServiceClientTest {
     public static void beforeAllTestMethods() {
 		rosCore  = RosCore.newPublic("127.0.0.1",11311);
 	    rosCore.start();
+            try{Thread.sleep(1000);} catch(Exception e){e.printStackTrace();}
     }
 
 	@AfterClass
