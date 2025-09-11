@@ -17,12 +17,13 @@ repositories {
         dirs '../cst/build/libs'
     }
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven { url = 'https://jitpack.io' }
     maven {
-        url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
+        url = "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
     }
     maven {
-        url "https://artifacts.camunda.com/artifactory/public/"
+        url = 'https://cst-group.github.io/cst-dependencies/maven-repo/'
+
     }
 }
 
