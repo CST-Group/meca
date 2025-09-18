@@ -73,7 +73,7 @@ public class MecaMind extends Mind {
 	private List<EmotionalCodelet> emotionalCodelets;
 	private List<ActivityCodelet> activityCodelets;
 	private List<BehaviorCodelet> behaviorCodelets;
-	private List<IMotorCodelet> motorCodelets;
+	private volatile List<IMotorCodelet> motorCodelets;
 	private Memory actionSequencePlanMemoryContainer;
 	private Memory actionSequencePlanRequestMemoryContainer;
 	private ActivityTrackingCodelet activityTrackingCodelet;

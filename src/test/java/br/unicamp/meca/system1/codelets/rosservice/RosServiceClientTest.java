@@ -19,8 +19,12 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.support.TimeStamp;
 import br.unicamp.meca.mind.MecaMind;
 import br.unicamp.meca.system1.codelets.IMotorCodelet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author andre
@@ -29,6 +33,7 @@ import br.unicamp.meca.system1.codelets.IMotorCodelet;
 public class RosServiceClientTest {
 
 	private static RosCore rosCore;
+        private volatile Memory motorMemory;
 	
 	@BeforeClass
     public static void beforeAllTestMethods() {
@@ -42,6 +47,13 @@ public class RosServiceClientTest {
         rosCore.shutdown();
     }
     
+    public void SilenceLoggers() {
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("httpclient")).setLevel(ch.qos.logback.classic.Level.OFF);
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.apache")).setLevel(ch.qos.logback.classic.Level.OFF);
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.ros")).setLevel(ch.qos.logback.classic.Level.OFF);
+        Logger.getLogger("Simulation").setLevel(Level.SEVERE);
+    }
+    
     @Test
     public void testRosService() throws URISyntaxException, InterruptedException {
     	
@@ -49,6 +61,7 @@ public class RosServiceClientTest {
 		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		nodeMainExecutor.execute(addTwoIntService, nodeConfiguration);	
+                
 		
 		Thread.sleep(2000);
 		
@@ -60,19 +73,18 @@ public class RosServiceClientTest {
 		motorCodelets.add(addTwoIntServiceClient);
     
 		mecaMind.setIMotorCodelets(motorCodelets);
-	    
-	    mecaMind.mountMecaMind();		
-		
+                mecaMind.mountMecaMind();		
 		mecaMind.start();
 		
 		Thread.sleep(5000);
 		
-		Memory motorMemory = addTwoIntServiceClient.getInput(addTwoIntServiceClient.getId());
+		motorMemory = addTwoIntServiceClient.getInput(addTwoIntServiceClient.getId());
 		
 		Integer expectedSum = 5;
 		
 		Integer[] numsToSum = new Integer[] {2,3};
 		motorMemory.setI(numsToSum);
+                System.out.println("Nums to sum were changed to {2,3}");
 		
 		Thread.sleep(2000);
 		
@@ -87,7 +99,8 @@ public class RosServiceClientTest {
     @Test
     public void testRosServiceCallTwice() throws URISyntaxException, InterruptedException {
     	
-		AddTwoIntService addTwoIntService = new AddTwoIntService();
+		SilenceLoggers();
+                AddTwoIntService addTwoIntService = new AddTwoIntService();
 		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		nodeMainExecutor.execute(addTwoIntService, nodeConfiguration);	
@@ -102,32 +115,61 @@ public class RosServiceClientTest {
 		motorCodelets.add(addTwoIntServiceClient);
     
 		mecaMind.setIMotorCodelets(motorCodelets);
-	    
-	    mecaMind.mountMecaMind();		
-		
+                mecaMind.mountMecaMind();		
 		mecaMind.start();
 		
 		Thread.sleep(5000);
 		
-		Memory motorMemory = addTwoIntServiceClient.getInput(addTwoIntServiceClient.getId());
+                synchronized(motorMemory) {
+                    motorMemory = addTwoIntServiceClient.getInput(addTwoIntServiceClient.getId());
+                }
 		
 		Integer expectedSum = 5;
 		
 		Integer[] numsToSum = new Integer[] {2,3};
 		motorMemory.setI(numsToSum);
-		
-		Thread.sleep(2000);
+                System.out.println("\n\nNums to sum were changed to {2,3} at "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
+		long tsstartreq = addTwoIntServiceClient.getTSReq();
+                long tsstopreq = tsstartreq;
+                long tsstartresp = addTwoIntServiceClient.getTSResp();
+                long tsstopresp = tsstartresp;
+                System.out.println("Service situation - req:"+TimeStamp.getStringTimeStamp(tsstartreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstartresp));
+                while (tsstartreq == tsstopreq || tsstartresp == tsstopresp ) {
+                    tsstopresp = addTwoIntServiceClient.getTSResp();
+                    tsstopreq = addTwoIntServiceClient.getTSReq();
+                    System.out.println("startreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" stopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
+                    System.out.println("startresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" stopreq: "+TimeStamp.getStringTimeStamp(tsstopresp));
+                    Thread.sleep(100);
+                }
+                System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp"+TimeStamp.getStringTimeStamp(tsstopresp));
+		//Thread.sleep(5000);
 		
 		assertEquals(expectedSum, addTwoIntServiceClient.getSum());
 		
 		expectedSum = 6;
 		
 		numsToSum = new Integer[] {3,3};
-		motorMemory.setI(numsToSum);
-		
-		Thread.sleep(2000);
-		
-		assertEquals(expectedSum, addTwoIntServiceClient.getSum());
+                //numsToSum[0] = 3;
+                //numsToSum[1] = 3;
+                synchronized(motorMemory) {
+                    motorMemory.setI(numsToSum);
+                }
+                System.out.println("\n\nNums to sum were changed to {3,3} at "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
+                tsstartreq = addTwoIntServiceClient.getTSReq();
+                tsstopreq = tsstartreq;
+                tsstartresp = addTwoIntServiceClient.getTSResp();
+                tsstopresp = tsstartresp;
+                System.out.println("Service situation - req:"+TimeStamp.getStringTimeStamp(tsstartreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstartresp));
+                while (tsstartreq == tsstopreq || tsstartresp == tsstopresp ) {
+                    tsstopresp = addTwoIntServiceClient.getTSResp();
+                    tsstopreq = addTwoIntServiceClient.getTSReq();
+                    System.out.println("tsstartreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" tsstopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
+                    System.out.println("tsstartresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" tsstopreq: "+TimeStamp.getStringTimeStamp(tsstopresp));
+                    System.out.println("motorMemory: "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
+                    Thread.sleep(100);
+                }
+                System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp"+TimeStamp.getStringTimeStamp(tsstopresp));
+                assertEquals(expectedSum, addTwoIntServiceClient.getSum());
 		
 		nodeMainExecutor.shutdownNodeMain(addTwoIntService);
 		

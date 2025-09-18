@@ -34,7 +34,7 @@ public abstract class MotorCodelet extends Codelet implements IMotorCodelet{
 
 	protected String id;
 	
-	protected Memory motorMemory;
+	protected volatile Memory motorMemory;
 
 	/**
 	 * Creates a MECA Motor Codelet.

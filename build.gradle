@@ -14,7 +14,7 @@ version = '0.7.0'
 
 repositories {
     flatDir {
-        dirs '../cst/build/libs'
+        dirs '../cst-desktop/build/libs'
     }
     mavenCentral()
     maven { url = 'https://jitpack.io' }
@@ -23,7 +23,6 @@ repositories {
     }
     maven {
         url = 'https://cst-group.github.io/cst-dependencies/maven-repo/'
-
     }
 }
 
@@ -32,7 +31,8 @@ configurations {
 }
 
 dependencies {
-   api('com.github.CST-Group:cst-desktop:1.1.0') 
+   //api('com.github.CST-Group:cst-desktop:1.1.0') 
+   api(':cst-desktop:1.1.1-full') 
    api 'org.ros.rosjava_messages:std_msgs:0.5.11'
    testImplementation group: 'junit', name: 'junit', version: '4.12'
    testImplementation 'org.ros.rosjava_messages:std_msgs:0.5.11'
@@ -98,4 +98,8 @@ jacocoTestReport {
     reports {
         xml.required = true
     }
+}
+
+test {
+    maxParallelForks = 1
 }
