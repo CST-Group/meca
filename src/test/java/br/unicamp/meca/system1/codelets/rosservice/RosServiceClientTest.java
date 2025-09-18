@@ -19,6 +19,7 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.support.TimeStamp;
 import br.unicamp.meca.mind.MecaMind;
 import br.unicamp.meca.system1.codelets.IMotorCodelet;
@@ -120,14 +121,17 @@ public class RosServiceClientTest {
 		
 		Thread.sleep(5000);
 		
-                synchronized(motorMemory) {
-                    motorMemory = addTwoIntServiceClient.getInput(addTwoIntServiceClient.getId());
-                }
-		
-		Integer expectedSum = 5;
+                MemoryContainer mc=null;
+                motorMemory = addTwoIntServiceClient.getInput(addTwoIntServiceClient.getId());
+                // Be careful ... at this point motorMemory is a MemoryContainer, and it is empty
+                if (motorMemory instanceof MemoryContainer)
+                    mc = (MemoryContainer) motorMemory;
+                Integer expectedSum = 5;
 		
 		Integer[] numsToSum = new Integer[] {2,3};
-		motorMemory.setI(numsToSum);
+		int id = motorMemory.setI(numsToSum);
+                // At this point, motorMemory has 1 internal MemoryObject and id should be 0
+                System.out.println("id: "+id);
                 System.out.println("\n\nNums to sum were changed to {2,3} at "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
 		long tsstartreq = addTwoIntServiceClient.getTSReq();
                 long tsstopreq = tsstartreq;
@@ -141,7 +145,7 @@ public class RosServiceClientTest {
                     System.out.println("startresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" stopreq: "+TimeStamp.getStringTimeStamp(tsstopresp));
                     Thread.sleep(100);
                 }
-                System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp"+TimeStamp.getStringTimeStamp(tsstopresp));
+                System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstopresp));
 		//Thread.sleep(5000);
 		
 		assertEquals(expectedSum, addTwoIntServiceClient.getSum());
@@ -149,11 +153,8 @@ public class RosServiceClientTest {
 		expectedSum = 6;
 		
 		numsToSum = new Integer[] {3,3};
-                //numsToSum[0] = 3;
-                //numsToSum[1] = 3;
-                synchronized(motorMemory) {
-                    motorMemory.setI(numsToSum);
-                }
+                // This is the tricker part ... instead of calling setI from motorMemory, we should use its MemoryContainer counterpart
+                mc.setI(numsToSum,0);
                 System.out.println("\n\nNums to sum were changed to {3,3} at "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
                 tsstartreq = addTwoIntServiceClient.getTSReq();
                 tsstopreq = tsstartreq;

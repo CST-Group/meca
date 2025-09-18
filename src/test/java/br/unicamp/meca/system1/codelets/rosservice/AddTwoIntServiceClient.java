@@ -36,9 +36,7 @@ public class AddTwoIntServiceClient extends RosServiceClientMotorCodelet<AddTwoI
                 b = numsToSum[1];
 		serviceMessageRequest.setA(numsToSum[0]);
 		serviceMessageRequest.setB(numsToSum[1]);
-                //tsreq = motorMemory.getTimestamp();
                 tsreq = System.currentTimeMillis();
-                //System.out.println("a = "+a+" b = "+b+" at "+TimeStamp.now()+" "+TimeStamp.getStringTimeStamp(tsreq));
                 System.out.println("REQUEST a = "+a+" b = "+b+" at "+TimeStamp.getStringTimeStamp(tsreq)+" with data from "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
                 
 		return true;
