@@ -1,27 +1,28 @@
 
 package br.unicamp.meca.system1.codelets.rosservice;
 
-import static org.junit.Assert.assertEquals;
 
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.support.TimeStamp;
 import br.unicamp.meca.mind.MecaMind;
 import br.unicamp.meca.system1.codelets.IMotorCodelet;
 
 //import br.unicamp.cst.bindings.ros2java.AddTwoIntsServiceClientSyncRos2;
 //import br.unicamp.cst.bindings.ros2java.AddTwoIntsServiceProvider;
-import troca_ros.AddTwoIntsRequestMessage;
 import troca_ros.AddTwoIntsResponseMessage;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.junit.Assert.assertEquals;
+//import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * ROS2 migration of the ROS1 RosServiceClientTest
@@ -32,6 +33,12 @@ public class ROS2_RosServiceClientTest {
 
     private static final Logger LOGGER = Logger.getLogger(ROS2_RosServiceClientTest.class.getName());
     private static MecaMind mecaMind;
+    private volatile Memory motorMemory;
+    
+    private static void SilenceLoggers() {
+        Logger.getLogger("pinorobotics.rtpstalk").setLevel(Level.OFF);
+        Logger.getLogger("id.jros2client").setLevel(Level.OFF);
+    }
 
     @BeforeClass
     public static void setup() {
@@ -46,13 +53,15 @@ public class ROS2_RosServiceClientTest {
 
     @Test
     public void testROS2_RosServiceCallOnce() throws InterruptedException {
+        SilenceLoggers();
+        setup();
         // Start ROS2 service provider
         AddTwoIntsServiceProvider serviceProvider = new AddTwoIntsServiceProvider();
         serviceProvider.start();
         Thread.sleep(500); // give service time to start
 
         // Create memory object for inputs
-        Memory memory = mecaMind.createMemoryObject("add_two_ints");
+        //Memory memory = mecaMind.createMemoryObject("add_two_ints");
 
         // Instantiate ROS2 synchronous client
         AddTwoIntsServiceClientSyncRos2 clientSync = new AddTwoIntsServiceClientSyncRos2("add_two_ints");
@@ -64,16 +73,20 @@ public class ROS2_RosServiceClientTest {
         mecaMind.setIMotorCodelets(motorCodelets);
         mecaMind.mountMecaMind();
         mecaMind.start();
-
-        // Send first request
-        Long[] inputs = new Long[]{2L, 3L};
-        memory.setI(inputs);
-
-        AddTwoIntsResponseMessage response = clientSync.callService(inputs);
-        Long sum = response.sum;
-
-        LOGGER.info("Sum received: " + sum);
-        assertEquals(Long.valueOf(5L), sum);
+        
+        Thread.sleep(5000);
+		
+	motorMemory = clientSync.getInput(clientSync.getId());
+		
+	Integer expectedSum = 5;
+		
+	Integer[] numsToSum = new Integer[] {2,3};
+	motorMemory.setI(numsToSum);
+        System.out.println("Nums to sum were changed to {2,3}");
+		
+	Thread.sleep(2000);
+		
+	assertEquals(expectedSum, clientSync.getSum());
 
         // Cleanup
         clientSync.stop();
@@ -83,12 +96,14 @@ public class ROS2_RosServiceClientTest {
 
     @Test
     public void testROS2_RosServiceCallTwice() throws InterruptedException {
+        SilenceLoggers();
+        setup();
         // Start ROS2 service provider
         AddTwoIntsServiceProvider serviceProvider = new AddTwoIntsServiceProvider();
         serviceProvider.start();
         Thread.sleep(500);
 
-        Memory memory = mecaMind.createMemoryObject("add_two_ints");
+        //Memory memory = mecaMind.createMemoryObject("add_two_ints");
 
         AddTwoIntsServiceClientSyncRos2 clientSync = new AddTwoIntsServiceClientSyncRos2("add_two_ints");
         clientSync.start();
@@ -98,22 +113,59 @@ public class ROS2_RosServiceClientTest {
         mecaMind.setIMotorCodelets(motorCodelets);
         mecaMind.mountMecaMind();
         mecaMind.start();
+        
+        MemoryContainer mc=null;
+        motorMemory = clientSync.getInput(clientSync.getId());
+        if (motorMemory instanceof MemoryContainer)
+                    mc = (MemoryContainer) motorMemory;
+        Integer expectedSum = 5;
 
         // First request
-        Long[] inputs1 = new Long[]{2L, 3L};
-        memory.setI(inputs1);
-        AddTwoIntsResponseMessage response1 = clientSync.callService(inputs1);
-        assertEquals(Long.valueOf(5L), response1.sum);
-
-        // Second request
-        Long[] inputs2 = new Long[]{3L, 3L};
-        memory.setI(inputs2);
-        AddTwoIntsResponseMessage response2 = clientSync.callService(inputs2);
-        assertEquals(Long.valueOf(6L), response2.sum);
-
-        // Cleanup
-        clientSync.stop();
-        serviceProvider.stop();
-        mecaMind.shutDown();
+        Integer[] numsToSum = new Integer[]{2, 3};
+        int id = motorMemory.setI(numsToSum);
+        // At this point, motorMemory has 1 internal MemoryObject and id should be 0
+        System.out.println("id: "+id);
+        System.out.println("\n\nNums to sum were changed to {2,3} at "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
+	long tsstartreq = clientSync.getTSReq();
+        long tsstopreq = tsstartreq;
+        long tsstartresp = clientSync.getTSResp();
+        long tsstopresp = tsstartresp;
+        System.out.println("Service situation - req:"+TimeStamp.getStringTimeStamp(tsstartreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstartresp));
+        while (tsstartreq == tsstopreq || tsstartresp == tsstopresp ) {
+            tsstopresp = clientSync.getTSResp();
+            tsstopreq = clientSync.getTSReq();
+            System.out.println("startreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" stopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
+            System.out.println("startresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" stopreq: "+TimeStamp.getStringTimeStamp(tsstopresp));
+            Thread.sleep(100);
+        }
+        System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstopresp));
+		//Thread.sleep(5000);
+		
+	assertEquals(expectedSum, clientSync.getSum());
+		
+	expectedSum = 6;
+		
+	numsToSum = new Integer[] {3,3};
+                // This is the tricker part ... instead of calling setI from motorMemory, we should use its MemoryContainer counterpart
+        mc.setI(numsToSum,0);
+        System.out.println("\n\nNums to sum were changed to {3,3} at "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
+        tsstartreq = clientSync.getTSReq();
+        tsstopreq = tsstartreq;
+        tsstartresp = clientSync.getTSResp();
+        tsstopresp = tsstartresp;
+        System.out.println("Service situation - req:"+TimeStamp.getStringTimeStamp(tsstartreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstartresp));
+        while (tsstartreq == tsstopreq || tsstartresp == tsstopresp ) {
+            tsstopresp = clientSync.getTSResp();
+            tsstopreq = clientSync.getTSReq();
+            System.out.println("tsstartreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" tsstopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
+            System.out.println("tsstartresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" tsstopreq: "+TimeStamp.getStringTimeStamp(tsstopresp));
+            System.out.println("motorMemory: "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
+            Thread.sleep(100);
+        }
+        System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp"+TimeStamp.getStringTimeStamp(tsstopresp));
+        assertEquals(expectedSum, clientSync.getSum());
+		
+	serviceProvider.stop();
+	mecaMind.shutDown();
     }
 }

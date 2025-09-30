@@ -21,7 +21,7 @@ version = '0.7.0'
 repositories {
     // Local flat directories for custom jars
     flatDir {
-        dirs '../cst-bindings/build/libs'
+        dirs '../cst-desktop/build/libs'
     }
 
     // Remote repositories
@@ -39,13 +39,13 @@ dependencies {
     //implementation files('../cst-bindings/build/libs/cst-bindings.jar')
     //implementation project(':cst-bindings')
     // CST Desktop API
-    api('com.github.CST-Group:cst-desktop:1.1.0')
-
+    //api('com.github.CST-Group:cst-desktop:1.1.0')
+    api(':cst-desktop:1.1.1-full')
     // CST Bindings (flat JAR)
-    api name: 'cst-bindings', ext: 'jar'
+    //api name: 'cst-bindings', ext: 'jar'
 
     // JUnit and testing
-    testImplementation 'junit:junit:4.12'
+    //testImplementation 'junit:junit:4.12'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

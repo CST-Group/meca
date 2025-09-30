@@ -16,8 +16,8 @@ import troca_ros.AddTwoIntsServiceDefinition;
  */
 public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<AddTwoIntsRequestMessage, AddTwoIntsResponseMessage> {
 
-    private volatile Long a, b;
-    private volatile Long sum;
+    private volatile Integer a, b;
+    private volatile Integer sum;
     private volatile long tsReq = 0, tsResp = 0;
 
     public ROS2_AddTwoIntServiceClient(String serviceName) {
@@ -35,7 +35,7 @@ public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<A
             return false;
         }
 
-        Long[] numsToSum = (Long[]) motorMemory.getI();
+        Integer[] numsToSum = (Integer[]) motorMemory.getI();
         a = numsToSum[0];
         b = numsToSum[1];
         request.withA(a).withB(b);
@@ -57,7 +57,7 @@ public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<A
         }
     }
 
-    public synchronized Long getSum() {
+    public synchronized Integer getSum() {
         return sum;
     }
 

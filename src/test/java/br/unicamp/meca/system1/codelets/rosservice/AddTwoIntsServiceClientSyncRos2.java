@@ -1,12 +1,12 @@
 
 package br.unicamp.meca.system1.codelets.rosservice;
 
-import br.unicamp.cst.bindings.ros2java.RosServiceClientSync;
 import troca_ros.AddTwoIntsRequestMessage;
 import troca_ros.AddTwoIntsResponseMessage;
 import troca_ros.AddTwoIntsServiceDefinition;
 import br.unicamp.meca.system1.codelets.Ros2ServiceClientMotorCodelet;
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryObject;
 
 /**
  *
@@ -15,6 +15,10 @@ import br.unicamp.cst.core.entities.Memory;
 
 
 public class AddTwoIntsServiceClientSyncRos2 extends Ros2ServiceClientMotorCodelet<AddTwoIntsRequestMessage, AddTwoIntsResponseMessage> {
+    
+    private volatile Integer a,b;
+    private volatile Integer sum;
+    private volatile long tsReq = 0, tsResp = 0;
 
     public AddTwoIntsServiceClientSyncRos2(String serviceName) {
         super("AddTwoIntsServiceClientSyncRos2", serviceName, new AddTwoIntsServiceDefinition());
@@ -34,8 +38,11 @@ public class AddTwoIntsServiceClientSyncRos2 extends Ros2ServiceClientMotorCodel
     protected boolean formatServiceRequest(Memory memory, AddTwoIntsRequestMessage request) {
         Integer[] inputs = (Integer[]) memory.getI(); // example cast
         if (inputs == null || inputs.length < 2) return false;
-        request.withA(inputs[0]);
-        request.withB(inputs[1]);
+        a = inputs[0];
+        b = inputs[1];
+        request.withA(a);
+        request.withB(b);
+        tsReq = System.currentTimeMillis();
         return true;
     }
   
@@ -52,17 +59,27 @@ public class AddTwoIntsServiceClientSyncRos2 extends Ros2ServiceClientMotorCodel
     }
     
     
-    public AddTwoIntsResponseMessage callService(Long[] inputs) {
-        AddTwoIntsRequestMessage request = createNewRequest();
-
-        Memory memory = new Memory("temp");
-        memory.setI(inputs);
-        formatServiceRequest(memory, request);
-
-        AddTwoIntsResponseMessage response = super.callService(request);
+    public AddTwoIntsResponseMessage callService(Integer[] inputs) {
+        sum = inputs[0]+inputs[1];
+        tsResp = System.currentTimeMillis();
+        AddTwoIntsResponseMessage response = new AddTwoIntsResponseMessage(sum);
         processServiceResponse(response);
-
-    return response;
+        return response;
 }    
+    
+    /**
+	 * @return the sum
+	 */
+	public synchronized Integer getSum() {
+		return sum;
+	}
+        
+        public synchronized long getTSReq() {
+        return tsReq;
+    }
+
+    public synchronized long getTSResp() {
+        return tsResp;
+    }
     
 }

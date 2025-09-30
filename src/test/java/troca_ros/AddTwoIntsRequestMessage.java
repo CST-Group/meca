@@ -18,22 +18,22 @@ import java.util.Objects;
 public class AddTwoIntsRequestMessage implements Message {
 
     static final String NAME = "troca_ros/AddTwoIntsServiceRequest";
-    public long a;
-    public long b;
+    public int a;
+    public int b;
 
     public AddTwoIntsRequestMessage() {}
 
-    public AddTwoIntsRequestMessage(long a, long b) {
+    public AddTwoIntsRequestMessage(int a, int b) {
         this.a = a;
         this.b = b;
     }
 
-    public AddTwoIntsRequestMessage withA(long a) {
+    public AddTwoIntsRequestMessage withA(int a) {
        this.a = a;
        return this;
    }
    
-   public AddTwoIntsRequestMessage withB(long b) {
+   public AddTwoIntsRequestMessage withB(int b) {
        this.b = b;
        return this;
    }

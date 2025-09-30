@@ -16,11 +16,11 @@ public class AddTwoIntsResponseMessage implements Message {
 
     static final String NAME = "troca_ros/AddTwoIntsServiceResponse";
 
-    public long sum;
+    public int sum;
 
     public AddTwoIntsResponseMessage() {}
 
-    public AddTwoIntsResponseMessage(long sum) {
+    public AddTwoIntsResponseMessage(int sum) {
         this.sum = sum;
     }
 
