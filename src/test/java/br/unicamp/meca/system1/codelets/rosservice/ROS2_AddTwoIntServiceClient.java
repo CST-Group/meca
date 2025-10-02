@@ -21,7 +21,7 @@ public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<A
     private volatile long tsReq = 0, tsResp = 0;
 
     public ROS2_AddTwoIntServiceClient(String serviceName) {
-        super("ROS2_AddTwoIntServiceClient", serviceName, new AddTwoIntsServiceDefinition());
+        super(serviceName, serviceName, new AddTwoIntsServiceDefinition());
     }
 
     @Override
@@ -31,10 +31,15 @@ public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<A
 
     @Override
     protected boolean formatServiceRequest(Memory motorMemory, AddTwoIntsRequestMessage request) {
+        //System.out.println("Request");
         if (motorMemory == null || motorMemory.getI() == null) {
+            if (motorMemory == null) System.out.println("motorMemory is null");
+            else {
+                if (motorMemory.getI() == null) System.out.println("motorMemory.getI() is null");
+            }
             return false;
         }
-
+        //System.out.println("Arrived here");
         Integer[] numsToSum = (Integer[]) motorMemory.getI();
         a = numsToSum[0];
         b = numsToSum[1];
@@ -50,6 +55,7 @@ public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<A
 
     @Override
     protected void processServiceResponse(AddTwoIntsResponseMessage response) {
+        //System.out.println("Response");
         if (response != null) {
             sum = response.sum;
             tsResp = System.currentTimeMillis();

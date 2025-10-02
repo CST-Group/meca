@@ -65,7 +65,7 @@ public class ROS2_RosServiceClientTest {
 
         // Instantiate ROS2 synchronous client
         AddTwoIntsServiceClientSyncRos2 clientSync = new AddTwoIntsServiceClientSyncRos2("add_two_ints");
-        clientSync.start();
+        //clientSync.start();
 
         // Insert client codelet in mind (for consistency)
         List<IMotorCodelet> motorCodelets = new ArrayList<>();
@@ -89,7 +89,7 @@ public class ROS2_RosServiceClientTest {
 	assertEquals(expectedSum, clientSync.getSum());
 
         // Cleanup
-        clientSync.stop();
+        //clientSync.stop();
         serviceProvider.stop();
         mecaMind.shutDown();
     }
@@ -105,8 +105,8 @@ public class ROS2_RosServiceClientTest {
 
         //Memory memory = mecaMind.createMemoryObject("add_two_ints");
 
-        AddTwoIntsServiceClientSyncRos2 clientSync = new AddTwoIntsServiceClientSyncRos2("add_two_ints");
-        clientSync.start();
+        ROS2_AddTwoIntServiceClient clientSync = new ROS2_AddTwoIntServiceClient("add_two_ints");
+        //clientSync.start();
 
         List<IMotorCodelet> motorCodelets = new ArrayList<>();
         motorCodelets.add(clientSync);
@@ -122,20 +122,21 @@ public class ROS2_RosServiceClientTest {
 
         // First request
         Integer[] numsToSum = new Integer[]{2, 3};
+        
+	long tsstartreq = System.currentTimeMillis(); //clientSync.getTSReq();
+        long tsstopreq = tsstartreq;
+        long tsstartresp = System.currentTimeMillis(); //clientSync.getTSResp();
+        long tsstopresp = tsstartresp;
         int id = motorMemory.setI(numsToSum);
         // At this point, motorMemory has 1 internal MemoryObject and id should be 0
         System.out.println("id: "+id);
         System.out.println("\n\nNums to sum were changed to {2,3} at "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
-	long tsstartreq = clientSync.getTSReq();
-        long tsstopreq = tsstartreq;
-        long tsstartresp = clientSync.getTSResp();
-        long tsstopresp = tsstartresp;
         System.out.println("Service situation - req:"+TimeStamp.getStringTimeStamp(tsstartreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstartresp));
-        while (tsstartreq == tsstopreq || tsstartresp == tsstopresp ) {
+        while (tsstartreq == tsstopreq || tsstartresp == tsstopresp || tsstopresp <= tsstopreq  ) {
             tsstopresp = clientSync.getTSResp();
             tsstopreq = clientSync.getTSReq();
             System.out.println("startreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" stopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
-            System.out.println("startresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" stopreq: "+TimeStamp.getStringTimeStamp(tsstopresp));
+            System.out.println("startresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" stopresp: "+TimeStamp.getStringTimeStamp(tsstopresp));
             Thread.sleep(100);
         }
         System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstopresp));
@@ -154,11 +155,11 @@ public class ROS2_RosServiceClientTest {
         tsstartresp = clientSync.getTSResp();
         tsstopresp = tsstartresp;
         System.out.println("Service situation - req:"+TimeStamp.getStringTimeStamp(tsstartreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstartresp));
-        while (tsstartreq == tsstopreq || tsstartresp == tsstopresp ) {
+        while (tsstartreq == tsstopreq || tsstartresp == tsstopresp || tsstopresp <= tsstopreq ) {
             tsstopresp = clientSync.getTSResp();
             tsstopreq = clientSync.getTSReq();
             System.out.println("tsstartreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" tsstopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
-            System.out.println("tsstartresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" tsstopreq: "+TimeStamp.getStringTimeStamp(tsstopresp));
+            System.out.println("tsstartresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" tsstopresp: "+TimeStamp.getStringTimeStamp(tsstopresp));
             System.out.println("motorMemory: "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
             Thread.sleep(100);
         }
