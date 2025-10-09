@@ -10,9 +10,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.ros.RosCore;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
@@ -25,6 +23,8 @@ import br.unicamp.meca.mind.MecaMind;
 import br.unicamp.meca.system1.codelets.IMotorCodelet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -36,14 +36,14 @@ public class RosServiceClientTest {
 	private static RosCore rosCore;
         private volatile Memory motorMemory;
 	
-	@BeforeClass
+	@BeforeAll
     public static void beforeAllTestMethods() {
 		rosCore  = RosCore.newPublic("127.0.0.1",11311);
 	    rosCore.start();
             try{Thread.sleep(1000);} catch(Exception e){e.printStackTrace();}
     }
 
-	@AfterClass
+	@AfterAll
     public static void afterAllTestMethods() {
         rosCore.shutdown();
     }

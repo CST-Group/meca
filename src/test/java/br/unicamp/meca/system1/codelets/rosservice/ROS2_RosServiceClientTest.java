@@ -10,10 +10,6 @@ import br.unicamp.meca.system1.codelets.IMotorCodelet;
 
 //import br.unicamp.cst.bindings.ros2java.AddTwoIntsServiceClientSyncRos2;
 //import br.unicamp.cst.bindings.ros2java.AddTwoIntsServiceProvider;
-import troca_ros.AddTwoIntsResponseMessage;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
 
 import java.util.ArrayList;
@@ -21,6 +17,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 //import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.Test;
 
@@ -40,13 +38,13 @@ public class ROS2_RosServiceClientTest {
         Logger.getLogger("id.jros2client").setLevel(Level.OFF);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         mecaMind = new MecaMind("ROS2_RosServiceClientTest");
         Logger.getLogger("id.jros2client").setLevel(Level.OFF);
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         if (mecaMind != null) mecaMind.shutDown();
     }
@@ -64,7 +62,8 @@ public class ROS2_RosServiceClientTest {
         //Memory memory = mecaMind.createMemoryObject("add_two_ints");
 
         // Instantiate ROS2 synchronous client
-        AddTwoIntsServiceClientSyncRos2 clientSync = new AddTwoIntsServiceClientSyncRos2("add_two_ints");
+        //AddTwoIntsServiceClientSyncRos2 clientSync = new AddTwoIntsServiceClientSyncRos2("add_two_ints");
+        ROS2_AddTwoIntServiceClient clientSync = new ROS2_AddTwoIntServiceClient("add_two_ints");
         //clientSync.start();
 
         // Insert client codelet in mind (for consistency)
@@ -74,7 +73,7 @@ public class ROS2_RosServiceClientTest {
         mecaMind.mountMecaMind();
         mecaMind.start();
         
-        Thread.sleep(5000);
+        //Thread.sleep(5000);
 		
 	motorMemory = clientSync.getInput(clientSync.getId());
 		
@@ -84,7 +83,25 @@ public class ROS2_RosServiceClientTest {
 	motorMemory.setI(numsToSum);
         System.out.println("Nums to sum were changed to {2,3}");
 		
-	Thread.sleep(2000);
+	//Thread.sleep(2000);
+        long tsstartreq = System.currentTimeMillis(); //clientSync.getTSReq();
+        long tsstopreq = tsstartreq;
+        long tsstartresp = System.currentTimeMillis(); //clientSync.getTSResp();
+        long tsstopresp = tsstartresp;
+        int id = motorMemory.setI(numsToSum);
+        // At this point, motorMemory has 1 internal MemoryObject and id should be 0
+        System.out.println("id: "+id);
+        System.out.println("\n\nNums to sum were changed to {2,3} at "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
+        System.out.println("Service situation - req:"+TimeStamp.getStringTimeStamp(tsstartreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstartresp));
+        while (tsstartreq == tsstopreq || tsstartresp == tsstopresp || tsstopresp <= tsstopreq  ) {
+            tsstopresp = clientSync.getTSResp();
+            tsstopreq = clientSync.getTSReq();
+            //System.out.println("startreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" stopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
+            //System.out.println("startresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" stopresp: "+TimeStamp.getStringTimeStamp(tsstopresp));
+            Thread.sleep(100);
+        }
+        System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstopresp));
+	System.out.println("I took "+TimeStamp.getStringTimeStamp(tsstopresp-tsstartreq,"mm:ss.SSS")+ " s to attend the service request !!");
 		
 	assertEquals(expectedSum, clientSync.getSum());
 
@@ -92,6 +109,10 @@ public class ROS2_RosServiceClientTest {
         //clientSync.stop();
         serviceProvider.stop();
         mecaMind.shutDown();
+    }
+    
+    public String cvr(long t) {
+        return TimeStamp.getStringTimeStamp(t,"hh:mm:ss.SSS");
     }
 
     @Test
@@ -135,12 +156,14 @@ public class ROS2_RosServiceClientTest {
         while (tsstartreq == tsstopreq || tsstartresp == tsstopresp || tsstopresp <= tsstopreq  ) {
             tsstopresp = clientSync.getTSResp();
             tsstopreq = clientSync.getTSReq();
-            System.out.println("startreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" stopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
-            System.out.println("startresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" stopresp: "+TimeStamp.getStringTimeStamp(tsstopresp));
+            System.out.print(".");
+            //System.out.println("req: "+cvr(tsstartreq)+" "+cvr(tsstopreq));
+            //System.out.println("resp: "+cvr(tsstartresp)+" "+cvr(tsstopresp));
             Thread.sleep(100);
         }
-        System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstopresp));
+        System.out.println("\nFinished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstopresp));
 		//Thread.sleep(5000);
+	System.out.println("I took "+TimeStamp.getStringTimeStamp(tsstopresp-tsstartreq,"mm:ss.SSS")+ " s to attend the service request !!");
 		
 	assertEquals(expectedSum, clientSync.getSum());
 		
@@ -158,12 +181,15 @@ public class ROS2_RosServiceClientTest {
         while (tsstartreq == tsstopreq || tsstartresp == tsstopresp || tsstopresp <= tsstopreq ) {
             tsstopresp = clientSync.getTSResp();
             tsstopreq = clientSync.getTSReq();
-            System.out.println("tsstartreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" tsstopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
-            System.out.println("tsstartresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" tsstopresp: "+TimeStamp.getStringTimeStamp(tsstopresp));
-            System.out.println("motorMemory: "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
+            //System.out.println("tsstartreq: "+TimeStamp.getStringTimeStamp(tsstartreq)+" tsstopreq: "+TimeStamp.getStringTimeStamp(tsstopreq));
+            //System.out.println("tsstartresp: "+TimeStamp.getStringTimeStamp(tsstartresp)+" tsstopresp: "+TimeStamp.getStringTimeStamp(tsstopresp));
+            //System.out.println("motorMemory: "+TimeStamp.getStringTimeStamp(motorMemory.getTimestamp()));
+            System.out.print(".");
             Thread.sleep(100);
         }
-        System.out.println("Finished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp"+TimeStamp.getStringTimeStamp(tsstopresp));
+        System.out.println("\nFinished process - req:"+TimeStamp.getStringTimeStamp(tsstopreq)+" resp:"+TimeStamp.getStringTimeStamp(tsstopresp));
+        System.out.println("I took "+TimeStamp.getStringTimeStamp(tsstopresp-tsstartreq,"mm:ss.SSS")+ " s to attend the service request !!");
+	
         assertEquals(expectedSum, clientSync.getSum());
 		
 	serviceProvider.stop();

@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
@@ -38,6 +36,8 @@ import br.unicamp.meca.system1.codelets.ISensoryCodelet;
 import br.unicamp.meca.system1.codelets.MotivationalCodelet;
 import br.unicamp.meca.system1.codelets.PerceptualCodelet;
 import br.unicamp.meca.system2.codelets.IPlanningCodelet;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 /**
  * @author andre
@@ -65,7 +65,7 @@ public class MecaMindTest {
 	
 	private static IPlanningCodelet planningCodelet;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() throws InterruptedException {
 
 		mecaMind = new MecaMind("MecaMind");
@@ -156,7 +156,7 @@ public class MecaMindTest {
 
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDown() {
 
 		mv.setVisible(false);
