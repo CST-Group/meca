@@ -14,7 +14,7 @@ import troca_ros.AddTwoIntsServiceDefinition;
  * @author jrborelli
  */
 
-public class AddTwoIntsServiceProvider implements Runnable {
+public class AddTwoIntsROS2ServiceProvider implements Runnable {
     
     volatile boolean stopflag = false;
     private Thread thread;
@@ -23,8 +23,9 @@ public class AddTwoIntsServiceProvider implements Runnable {
     ServiceHandler<AddTwoIntsRequestMessage,AddTwoIntsResponseMessage> proc;
     JRos2Client client;
     JRos2Service service;
+    public boolean running = false;
     
-    public AddTwoIntsServiceProvider() {
+    public AddTwoIntsROS2ServiceProvider() {
         proc = new ServiceHandler<>() {
             @Override
             public AddTwoIntsResponseMessage execute(AddTwoIntsRequestMessage request) {
@@ -39,6 +40,7 @@ public class AddTwoIntsServiceProvider implements Runnable {
     
     @Override
     public void run() {
+        running = true;
         clientFactory = new JRos2ClientFactory();
         serviceClientFactory = new JRos2ServicesFactory();
         
@@ -52,6 +54,7 @@ public class AddTwoIntsServiceProvider implements Runnable {
         service.close();
         client.close();
         System.out.println("Service finished ...");
+        running = false;
     }
     
     public void start() {

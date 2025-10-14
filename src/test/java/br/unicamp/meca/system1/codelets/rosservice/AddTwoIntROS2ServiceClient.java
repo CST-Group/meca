@@ -14,13 +14,14 @@ import troca_ros.AddTwoIntsServiceDefinition;
  * @author jrborelli
  * 
  */
-public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<AddTwoIntsRequestMessage, AddTwoIntsResponseMessage> {
+public class AddTwoIntROS2ServiceClient extends Ros2ServiceClientMotorCodelet<AddTwoIntsRequestMessage, AddTwoIntsResponseMessage> {
 
     private volatile Integer a, b;
     private volatile Integer sum;
     private volatile long tsReq = 0, tsResp = 0;
+    public boolean processing = false;
 
-    public ROS2_AddTwoIntServiceClient(String serviceName) {
+    public AddTwoIntROS2ServiceClient(String serviceName) {
         super(serviceName, serviceName, new AddTwoIntsServiceDefinition());
     }
 
@@ -31,6 +32,7 @@ public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<A
 
     @Override
     protected boolean formatServiceRequest(Memory motorMemory, AddTwoIntsRequestMessage request) {
+        processing = true;
         //System.out.println("Request");
         if (motorMemory == null || motorMemory.getI() == null) {
             if (motorMemory == null) System.out.println("motorMemory is null");
@@ -61,6 +63,7 @@ public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<A
             tsResp = System.currentTimeMillis();
             System.out.println("RESPONSE Sum=" + sum + " at " + TimeStamp.getStringTimeStamp(tsResp));
         }
+        processing = false;
     }
 
     public synchronized Integer getSum() {
@@ -73,5 +76,13 @@ public class ROS2_AddTwoIntServiceClient extends Ros2ServiceClientMotorCodelet<A
 
     public synchronized long getTSResp() {
         return tsResp;
+    }
+    
+    @Override
+    public void stop() {
+        while(processing) {
+            try{Thread.sleep(100);} catch(Exception e){}
+        }
+        super.stop();
     }
 }

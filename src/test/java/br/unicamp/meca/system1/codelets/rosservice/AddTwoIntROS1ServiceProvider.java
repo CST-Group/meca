@@ -12,7 +12,7 @@ import org.ros.node.service.ServiceResponseBuilder;
  * @author andre
  *
  */
-public class AddTwoIntService extends AbstractNodeMain {
+public class AddTwoIntROS1ServiceProvider extends AbstractNodeMain {
 
 	@Override
 	  public GraphName getDefaultNodeName() {

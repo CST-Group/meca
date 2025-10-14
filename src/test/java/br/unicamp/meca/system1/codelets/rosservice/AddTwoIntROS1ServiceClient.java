@@ -15,13 +15,13 @@ import rosjava_test_msgs.AddTwoIntsResponse;
  * @author andre
  *
  */
-public class AddTwoIntServiceClient extends RosServiceClientMotorCodelet<AddTwoIntsRequest, AddTwoIntsResponse> {
+public class AddTwoIntROS1ServiceClient extends RosServiceClientMotorCodelet<AddTwoIntsRequest, AddTwoIntsResponse> {
 
 	private volatile Integer a,b;
         private volatile Integer sum;
         private volatile long tsreq=0, tsresp=0;
 	
-	public AddTwoIntServiceClient(String host, URI masterURI) {
+	public AddTwoIntROS1ServiceClient(String host, URI masterURI) {
 		super("AddTwoIntServiceClient", "add_two_ints", rosjava_test_msgs.AddTwoInts._TYPE, host, masterURI);
 	}
 

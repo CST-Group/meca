@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author andre
  *
  */
-public class RosServiceClientTest {
+public class ROS1_ServiceClientTest {
 
 	private static RosCore rosCore;
         private volatile Memory motorMemory;
@@ -58,7 +58,7 @@ public class RosServiceClientTest {
     @Test
     public void testRosService() throws URISyntaxException, InterruptedException {
     	
-		AddTwoIntService addTwoIntService = new AddTwoIntService();
+		AddTwoIntROS1ServiceProvider addTwoIntService = new AddTwoIntROS1ServiceProvider();
 		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		nodeMainExecutor.execute(addTwoIntService, nodeConfiguration);	
@@ -70,7 +70,7 @@ public class RosServiceClientTest {
 		
 		List<IMotorCodelet> motorCodelets = new ArrayList<>();
 		
-		AddTwoIntServiceClient addTwoIntServiceClient = new AddTwoIntServiceClient("127.0.0.1",new URI("http://127.0.0.1:11311"));
+		AddTwoIntROS1ServiceClient addTwoIntServiceClient = new AddTwoIntROS1ServiceClient("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		motorCodelets.add(addTwoIntServiceClient);
     
 		mecaMind.setIMotorCodelets(motorCodelets);
@@ -101,7 +101,7 @@ public class RosServiceClientTest {
     public void testRosServiceCallTwice() throws URISyntaxException, InterruptedException {
     	
 		SilenceLoggers();
-                AddTwoIntService addTwoIntService = new AddTwoIntService();
+                AddTwoIntROS1ServiceProvider addTwoIntService = new AddTwoIntROS1ServiceProvider();
 		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		nodeMainExecutor.execute(addTwoIntService, nodeConfiguration);	
@@ -112,7 +112,7 @@ public class RosServiceClientTest {
 		
 		List<IMotorCodelet> motorCodelets = new ArrayList<>();
 		
-		AddTwoIntServiceClient addTwoIntServiceClient = new AddTwoIntServiceClient("127.0.0.1",new URI("http://127.0.0.1:11311"));
+		AddTwoIntROS1ServiceClient addTwoIntServiceClient = new AddTwoIntROS1ServiceClient("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		motorCodelets.add(addTwoIntServiceClient);
     
 		mecaMind.setIMotorCodelets(motorCodelets);
