@@ -61,6 +61,7 @@ public class AddTwoIntROS2ServiceClient extends Ros2ServiceClientMotorCodelet<Ad
         if (response != null) {
             sum = response.sum;
             tsResp = System.currentTimeMillis();
+            System.out.println("Using a: "+a+" b: "+b+" from "+TimeStamp.getStringTimeStamp(tsReq));
             System.out.println("RESPONSE Sum=" + sum + " at " + TimeStamp.getStringTimeStamp(tsResp));
         }
         processing = false;

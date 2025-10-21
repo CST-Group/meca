@@ -32,6 +32,7 @@ public class ROS2_ServiceClientTest {
     private static final Logger LOGGER = Logger.getLogger(ROS2_ServiceClientTest.class.getName());
     private static MecaMind mecaMind;
     private volatile Memory motorMemory;
+    private static AddTwoIntsROS2ServiceProvider serviceProvider;
     
     private static void SilenceLoggers() {
         Logger.getLogger("pinorobotics.rtpstalk").setLevel(Level.OFF);
@@ -42,22 +43,25 @@ public class ROS2_ServiceClientTest {
     public static void setup() {
         mecaMind = new MecaMind("ROS2_RosServiceClientTest");
         Logger.getLogger("id.jros2client").setLevel(Level.OFF);
+        serviceProvider = new AddTwoIntsROS2ServiceProvider();
+        serviceProvider.start();
     }
 
     @AfterAll
     public static void cleanup() {
-        if (mecaMind != null) mecaMind.shutDown();
+        //if (mecaMind != null) mecaMind.shutDown();
+        serviceProvider.stop();
     }
 
     @Test
     public void testROS2_RosServiceCallOnce() throws InterruptedException {
         System.out.println("\nStarting the RosServiceCallOnce test");
         SilenceLoggers();
-        setup();
+        //setup();
         // Start ROS2 service provider
-        AddTwoIntsROS2ServiceProvider serviceProvider = new AddTwoIntsROS2ServiceProvider();
-        serviceProvider.start();
-        Thread.sleep(500); // give service time to start
+//        AddTwoIntsROS2ServiceProvider serviceProvider = new AddTwoIntsROS2ServiceProvider();
+//        serviceProvider.start();
+//        Thread.sleep(500); // give service time to start
 
         // Create memory object for inputs
         //Memory memory = mecaMind.createMemoryObject("add_two_ints");
@@ -110,9 +114,9 @@ public class ROS2_ServiceClientTest {
         //clientSync.stop();
         mecaMind.shutDown();
         //Thread.sleep(5000);
-        clientSync.stop();
-        serviceProvider.stop();
-        while (serviceProvider.running) Thread.sleep(100);
+        //clientSync.stop();
+        //serviceProvider.stop();
+        //while (serviceProvider.running) Thread.sleep(100);
         System.out.println("The test was finished!");
     }
     
@@ -124,11 +128,11 @@ public class ROS2_ServiceClientTest {
     public void testROS2_RosServiceCallTwice() throws InterruptedException {
         System.out.println("\nStarting the RosServiceCallTwice test");
         SilenceLoggers();
-        setup();
+        //setup();
         // Start ROS2 service provider
-        AddTwoIntsROS2ServiceProvider serviceProvider = new AddTwoIntsROS2ServiceProvider();
-        serviceProvider.start();
-        Thread.sleep(500);
+//        AddTwoIntsROS2ServiceProvider serviceProvider = new AddTwoIntsROS2ServiceProvider();
+//        serviceProvider.start();
+//        Thread.sleep(500);
 
         //Memory memory = mecaMind.createMemoryObject("add_two_ints");
 
@@ -198,10 +202,10 @@ public class ROS2_ServiceClientTest {
 	
         assertEquals(expectedSum, clientSync.getSum());
 	mecaMind.shutDown();
-        clientSync.stop();
+        //clientSync.stop();
         //Thread.sleep(5000);
-	serviceProvider.stop();
-        while (serviceProvider.running) Thread.sleep(100);
+	//serviceProvider.stop();
+        //while (serviceProvider.running) Thread.sleep(100);
 	//Thread.sleep(5000);
         System.out.println("The test was finished!");
     }

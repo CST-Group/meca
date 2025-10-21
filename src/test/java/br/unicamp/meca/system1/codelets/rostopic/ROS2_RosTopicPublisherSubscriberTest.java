@@ -49,8 +49,8 @@ public class ROS2_RosTopicPublisherSubscriberTest {
     public static void setup() {
         LOGGER.info("Setting up MecaMind for ROS2 Publisher/Subscriber test...");
         // optionally silence noisy loggers here if you want:
-        // Logger.getLogger("pinorobotics.rtpstalk").setLevel(Level.OFF);
-        // Logger.getLogger("id.jros2client").setLevel(Level.OFF);
+        Logger.getLogger("pinorobotics.rtpstalk").setLevel(Level.OFF);
+        Logger.getLogger("id.jros2client").setLevel(Level.OFF);
         mecaMind = new MecaMind("ROS2_RosTopicPublisherSubscriber");
     }
 
@@ -184,6 +184,43 @@ public class ROS2_RosTopicPublisherSubscriberTest {
         LOGGER.log(Level.INFO,"#############" + chatterTopicSubscriber.getId());
         //chatterTopicSubscriber.getOutput(chatterTopicSubscriber.getId()).setName("chatter");
         ///////////////Memory sensoryMemory = chatterTopicSubscriber.getOutput("chatterTopicSubscriber");
+        String messageActual = (String) sensoryMemory.getI();
+
+        LOGGER.log(Level.INFO, "Expected = \"{0}\", Actual = \"{1}\"", new Object[]{messageExpected, messageActual});
+        assertEquals(messageExpected, messageActual);
+
+        mecaMind.shutDown(); // Already in @AfterAll
+    }
+    
+    @Test
+    public void testRos2Topics2() throws InterruptedException {
+
+        List<IMotorCodelet> motorCodelets = new ArrayList<>();
+        ROS2_ChatterTopicPublisher chatterTopicPublisher = new ROS2_ChatterTopicPublisher("chatter");
+        motorCodelets.add(chatterTopicPublisher);
+
+        List<ISensoryCodelet> sensoryCodelets = new ArrayList<>();
+        ROS2_ChatterTopicSubscriber chatterTopicSubscriber = new ROS2_ChatterTopicSubscriber("chatter");
+        sensoryCodelets.add(chatterTopicSubscriber);
+        
+        mecaMind.setIMotorCodelets(motorCodelets);
+        mecaMind.setISensoryCodelets(sensoryCodelets);
+        mecaMind.mountMecaMind();
+
+        mecaMind.start();
+        LOGGER.info("MECA Mind started — waiting for topic bridge...");
+
+        // Give time for nodes to start
+        Thread.sleep(1000);
+
+        String messageExpected = "Hello World";
+        Memory motorMemory = chatterTopicPublisher.getInput(chatterTopicPublisher.getId());
+        motorMemory.setI(messageExpected);
+
+        // Wait for the message to propagate
+        Thread.sleep(2000);
+
+        Memory sensoryMemory = chatterTopicSubscriber.getOutput(chatterTopicSubscriber.getId());
         String messageActual = (String) sensoryMemory.getI();
 
         LOGGER.log(Level.INFO, "Expected = \"{0}\", Actual = \"{1}\"", new Object[]{messageExpected, messageActual});
