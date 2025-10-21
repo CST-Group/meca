@@ -26,7 +26,7 @@ public abstract class Ros2TopicSubscriberSensoryCodelet<T extends Message>
      */
     public Ros2TopicSubscriberSensoryCodelet(String id, String topic, Class<T> messageType) {
         super(topic, messageType);
-        this.id = id;
+        this.id = topic;
     }
 
     /**

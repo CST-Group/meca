@@ -8,7 +8,7 @@ import br.unicamp.cst.support.TimeStamp;
 import br.unicamp.meca.mind.MecaMind;
 import br.unicamp.meca.system1.codelets.IMotorCodelet;
 
-//import br.unicamp.cst.bindings.ros2java.AddTwoIntsServiceClientSyncRos2;
+//import br.unicamp.cst.bindings.ros2java;
 //import br.unicamp.cst.bindings.ros2java.AddTwoIntsROS2ServiceProvider;
 
 
@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static org.junit.Assert.assertEquals;
+//import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-//import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.Test;
 
 /**

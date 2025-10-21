@@ -36,12 +36,12 @@ configurations {
 }
 
 dependencies {
-    //implementation files('../cst-bindings/build/libs/cst-bindings.jar')
+    implementation files('../cst-bindings/build/libs/cst-bindings.jar') //RESOLVEU -> estava comentadado
     //implementation project(':cst-bindings')
     // CST Desktop API
     //api('com.github.CST-Group:cst-desktop:1.1.0')
     api(':cst-desktop:1.1.1-full')
-    // CST Bindings (flat JAR)
+    //CST Bindings (flat JAR)
     //api name: 'cst-bindings', ext: 'jar'
 
     // JUnit and testing

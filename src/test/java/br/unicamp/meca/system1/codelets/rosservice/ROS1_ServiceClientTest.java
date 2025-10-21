@@ -3,14 +3,13 @@
  */
 package br.unicamp.meca.system1.codelets.rosservice;
 
-import static org.junit.Assert.assertEquals;
+//import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
 import org.ros.RosCore;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
@@ -23,6 +22,8 @@ import br.unicamp.meca.mind.MecaMind;
 import br.unicamp.meca.system1.codelets.IMotorCodelet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.LoggerFactory;
