@@ -24,34 +24,24 @@ import java.util.logging.Logger;
  * @author jrborelli
  */
 
-import java.time.Duration;
-import java.time.Instant;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-
-
-/**
- * Fully asynchronous ROS2 Publisher-Subscriber test using CompletableFuture.
- * Reacts immediately when the message arrives.
- * 
- * Author: jrborelli
- */
 
 public class ROS2_RosTopicPublisherSubscriberTest {
 
     private static final Logger LOGGER = Logger.getLogger(ROS2_RosTopicPublisherSubscriberTest.class.getName());
     private static MecaMind mecaMind;
+    
+    // optionally silence noisy loggers here if you want:
+    private static void SilenceLoggers() {
+        Logger.getLogger("pinorobotics.rtpstalk").setLevel(Level.OFF);
+        Logger.getLogger("id.jros2client").setLevel(Level.OFF);
+    }
 
     @BeforeAll
     public static void setup() {
+        SilenceLoggers();
         LOGGER.info("Setting up MecaMind for ROS2 Publisher/Subscriber test...");
-        // optionally silence noisy loggers here if you want:
-        Logger.getLogger("pinorobotics.rtpstalk").setLevel(Level.OFF);
-        Logger.getLogger("id.jros2client").setLevel(Level.OFF);
         mecaMind = new MecaMind("ROS2_RosTopicPublisherSubscriber");
+        
     }
 
     @AfterAll
@@ -63,6 +53,65 @@ public class ROS2_RosTopicPublisherSubscriberTest {
     }
 
     @Test
+    public void testRos2Topics() throws InterruptedException {
+
+        List<IMotorCodelet> motorCodelets = new ArrayList<>();
+        ROS2_ChatterTopicPublisher chatterTopicPublisher = new ROS2_ChatterTopicPublisher("chatter");
+        motorCodelets.add(chatterTopicPublisher);
+
+        List<ISensoryCodelet> sensoryCodelets = new ArrayList<>();
+        ROS2_ChatterTopicSubscriber chatterTopicSubscriber = new ROS2_ChatterTopicSubscriber("chatter");
+        sensoryCodelets.add(chatterTopicSubscriber);
+        
+        mecaMind.setIMotorCodelets(motorCodelets);
+        mecaMind.setISensoryCodelets(sensoryCodelets);
+        mecaMind.mountMecaMind();
+
+        mecaMind.start();
+        LOGGER.info("MECA Mind started — waiting for topic bridge...");
+
+        // Give time for nodes to start
+        Thread.sleep(1000);
+
+        String messageExpected = "Hello World";
+        Memory motorMemory = chatterTopicPublisher.getInput(chatterTopicPublisher.getId());
+        motorMemory.setI(messageExpected);
+                
+        final long timeoutMillis = 50000L;
+        //final long pollIntervalMs = 50L;
+        final long start = System.currentTimeMillis();
+        long timeFinished = 0;
+        
+        Memory sensoryMemory = chatterTopicSubscriber.getOutput(chatterTopicSubscriber.getId());
+        String messageActual = null;
+        
+        while(messageActual==null && (System.currentTimeMillis() - start < timeoutMillis)){
+          messageActual = (String) sensoryMemory.getI();  
+        }
+        
+        timeFinished = System.currentTimeMillis() - start;
+        
+        LOGGER.log(Level.INFO, "Expected = \"{0}\", Actual = \"{1}\"", new Object[]{messageExpected, messageActual});
+        assertEquals(messageExpected, messageActual);
+        LOGGER.log(Level.INFO, "Message received in {0} seconds", new Object[]{timeFinished});
+
+        mecaMind.shutDown(); // Already in @AfterAll
+    }
+}
+
+
+/*
+
+// Add these imports:
+import java.time.Duration;
+import java.time.Instant;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
+@Test
     public void testChatterTopicIntegration() throws Exception {
         // --- Create specialized codelets ---
         ROS2_ChatterTopicPublisher publisherCodelet = new ROS2_ChatterTopicPublisher("chatter");
@@ -138,156 +187,4 @@ public class ROS2_RosTopicPublisherSubscriberTest {
         // --- Shutdown ---
         mecaMind.shutDown();
     }
-    
-    @Test
-    public void testRos2Topics() throws InterruptedException {
-
-        List<IMotorCodelet> motorCodelets = new ArrayList<>();
-        ROS2_ChatterTopicPublisher chatterTopicPublisher = new ROS2_ChatterTopicPublisher("chatter");
-        motorCodelets.add(chatterTopicPublisher);
-
-        List<ISensoryCodelet> sensoryCodelets = new ArrayList<>();
-        ROS2_ChatterTopicSubscriber chatterTopicSubscriber = new ROS2_ChatterTopicSubscriber("chatter");
-        sensoryCodelets.add(chatterTopicSubscriber);
-        
-        LOGGER.log(Level.INFO,"#############" + chatterTopicSubscriber.getId());
-        LOGGER.log(Level.INFO,"#############" + chatterTopicPublisher.getId());
-        
-        mecaMind.setIMotorCodelets(motorCodelets);
-        mecaMind.setISensoryCodelets(sensoryCodelets);
-        mecaMind.mountMecaMind();
-
-        mecaMind.start();
-        LOGGER.info("MECA Mind started — waiting for topic bridge...");
-
-        // Give time for nodes to start
-        Thread.sleep(1000);
-
-        String messageExpected = "Hello World";
-        Memory motorMemory = chatterTopicPublisher.getInput(chatterTopicPublisher.getId());
-        ////////////////chatterTopicPublisher.getInput(chatterTopicPublisher.getId()).setI(messageExpected);
-        ////////////////chatterTopicPublisher.getInput(chatterTopicPublisher.getId()).setName("chatter");
-        motorMemory.setI(messageExpected);
-        motorMemory.setName("chatter");   // NOVO
-        chatterTopicPublisher.addInput(motorMemory);//NOVO
-
-        // Wait for the message to propagate
-        Thread.sleep(1000);
-
-        //Memory sensoryMemory2 = chatterTopicSubscriber.getOutput(chatterTopicSubscriber.getId());
-        //sensoryMemory2.setName("chatter");//NOVO
-        //chatterTopicSubscriber.addOutput(sensoryMemory2);//NOVO
-        
-        Thread.sleep(10000);
-        
-        Memory sensoryMemory = chatterTopicSubscriber.getOutput(chatterTopicSubscriber.getId());
-        LOGGER.log(Level.INFO,"#############" + chatterTopicSubscriber.getId());
-        //chatterTopicSubscriber.getOutput(chatterTopicSubscriber.getId()).setName("chatter");
-        ///////////////Memory sensoryMemory = chatterTopicSubscriber.getOutput("chatterTopicSubscriber");
-        String messageActual = (String) sensoryMemory.getI();
-
-        LOGGER.log(Level.INFO, "Expected = \"{0}\", Actual = \"{1}\"", new Object[]{messageExpected, messageActual});
-        assertEquals(messageExpected, messageActual);
-
-        mecaMind.shutDown(); // Already in @AfterAll
-    }
-    
-    @Test
-    public void testRos2Topics2() throws InterruptedException {
-
-        List<IMotorCodelet> motorCodelets = new ArrayList<>();
-        ROS2_ChatterTopicPublisher chatterTopicPublisher = new ROS2_ChatterTopicPublisher("chatter");
-        motorCodelets.add(chatterTopicPublisher);
-
-        List<ISensoryCodelet> sensoryCodelets = new ArrayList<>();
-        ROS2_ChatterTopicSubscriber chatterTopicSubscriber = new ROS2_ChatterTopicSubscriber("chatter");
-        sensoryCodelets.add(chatterTopicSubscriber);
-        
-        mecaMind.setIMotorCodelets(motorCodelets);
-        mecaMind.setISensoryCodelets(sensoryCodelets);
-        mecaMind.mountMecaMind();
-
-        mecaMind.start();
-        LOGGER.info("MECA Mind started — waiting for topic bridge...");
-
-        // Give time for nodes to start
-        Thread.sleep(1000);
-
-        String messageExpected = "Hello World";
-        Memory motorMemory = chatterTopicPublisher.getInput(chatterTopicPublisher.getId());
-        motorMemory.setI(messageExpected);
-
-        // Wait for the message to propagate
-        Thread.sleep(2000);
-
-        Memory sensoryMemory = chatterTopicSubscriber.getOutput(chatterTopicSubscriber.getId());
-        String messageActual = (String) sensoryMemory.getI();
-
-        LOGGER.log(Level.INFO, "Expected = \"{0}\", Actual = \"{1}\"", new Object[]{messageExpected, messageActual});
-        assertEquals(messageExpected, messageActual);
-
-        mecaMind.shutDown(); // Already in @AfterAll
-    }
-}
-
-
-/*
-public class ROS2_RosTopicPublisherSubscriberTest {
-
-    private static MecaMind mecaMind;
-    private static final Logger LOGGER = Logger.getLogger(ROS2_RosTopicPublisherSubscriberTest.class.getName());
-
-    @BeforeAll
-    public static void beforeAllTestMethods() {
-        LOGGER.info("Setting up MecaMind for ROS2 Publisher/Subscriber test...");
-        mecaMind = new MecaMind("ROS2_RosTopicPublisherSubscriber");
-    }
-
-    @AfterAll
-    public static void afterAllTestMethods() {
-        LOGGER.info("Tearing down MecaMind...");
-        if (mecaMind != null) {
-            mecaMind.shutDown();
-        }
-    }
-
-    @Test
-    public void testRos2Topics() throws InterruptedException {
-
-        List<IMotorCodelet> motorCodelets = new ArrayList<>();
-        ROS2_ChatterTopicPublisher chatterTopicPublisher = new ROS2_ChatterTopicPublisher("chatter");
-        motorCodelets.add(chatterTopicPublisher);
-
-        List<ISensoryCodelet> sensoryCodelets = new ArrayList<>();
-        ROS2_ChatterTopicSubscriber chatterTopicSubscriber = new ROS2_ChatterTopicSubscriber("chatter");
-        sensoryCodelets.add(chatterTopicSubscriber);
-        
-        mecaMind.setIMotorCodelets(motorCodelets);
-        mecaMind.setISensoryCodelets(sensoryCodelets);
-        mecaMind.mountMecaMind();
-
-        mecaMind.start();
-        LOGGER.info("MECA Mind started — waiting for topic bridge...");
-
-        // Give time for nodes to start
-        Thread.sleep(1000);
-
-        String messageExpected = "Hello World";
-        Memory motorMemory = chatterTopicPublisher.getInput(chatterTopicPublisher.getId());
-        motorMemory.setI(messageExpected);
-
-        // Wait for the message to propagate
-        Thread.sleep(1000);
-
-        Memory sensoryMemory = chatterTopicSubscriber.getOutput(chatterTopicSubscriber.getId());
-        String messageActual = (String) sensoryMemory.getI();
-
-        LOGGER.log(Level.INFO, "Expected = \"{0}\", Actual = \"{1}\"", new Object[]{messageExpected, messageActual});
-        assertEquals(messageExpected, messageActual);
-
-        mecaMind.shutDown(); // Already in @AfterAll
-    }
-}
-
-
 */
