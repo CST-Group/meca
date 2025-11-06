@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.support.TimeStamp;
 import br.unicamp.meca.mind.MecaMind;
 import br.unicamp.meca.system1.codelets.IMotorCodelet;
 import br.unicamp.meca.system1.codelets.ISensoryCodelet;
@@ -24,13 +25,7 @@ import java.util.logging.Logger;
  * @author jrborelli
  */
 
-import java.time.Duration;
-import java.time.Instant;
-
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 
 /**
@@ -215,13 +210,20 @@ public class ROS2_RosTopicPublisherSubscriberTest {
 
         String messageExpected = "Hello World";
         Memory motorMemory = chatterTopicPublisher.getInput(chatterTopicPublisher.getId());
-        motorMemory.setI(messageExpected);
-
-        // Wait for the message to propagate
-        Thread.sleep(2000);
-
         Memory sensoryMemory = chatterTopicSubscriber.getOutput(chatterTopicSubscriber.getId());
+        long start = sensoryMemory.getTimestamp();
+        motorMemory.setI(messageExpected);
+        long actual = start;
+        long now = System.currentTimeMillis();
         String messageActual = (String) sensoryMemory.getI();
+        while (actual == start && (now-start) < 15000L) {
+            actual = sensoryMemory.getTimestamp();
+            messageActual = (String) sensoryMemory.getI();
+            now = System.currentTimeMillis();
+            //System.out.println(TimeStamp.getStringTimeStamp(now-start, "HH:mm:ss.SSS")+" "+TimeStamp.getStringTimeStamp(actual-start, "HH:mm:ss.SSS")+" "+messageActual);
+            Thread.sleep(1000);
+        }
+        messageActual = (String) sensoryMemory.getI();
 
         LOGGER.log(Level.INFO, "Expected = \"{0}\", Actual = \"{1}\"", new Object[]{messageExpected, messageActual});
         assertEquals(messageExpected, messageActual);
