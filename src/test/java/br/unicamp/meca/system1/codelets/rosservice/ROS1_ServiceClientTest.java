@@ -3,16 +3,13 @@
  */
 package br.unicamp.meca.system1.codelets.rosservice;
 
-import static org.junit.Assert.assertEquals;
+//import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.ros.RosCore;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
@@ -25,25 +22,29 @@ import br.unicamp.meca.mind.MecaMind;
 import br.unicamp.meca.system1.codelets.IMotorCodelet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author andre
  *
  */
-public class RosServiceClientTest {
+public class ROS1_ServiceClientTest {
 
 	private static RosCore rosCore;
         private volatile Memory motorMemory;
 	
-	@BeforeClass
+	@BeforeAll
     public static void beforeAllTestMethods() {
 		rosCore  = RosCore.newPublic("127.0.0.1",11311);
 	    rosCore.start();
             try{Thread.sleep(1000);} catch(Exception e){e.printStackTrace();}
     }
 
-	@AfterClass
+	@AfterAll
     public static void afterAllTestMethods() {
         rosCore.shutdown();
     }
@@ -58,7 +59,7 @@ public class RosServiceClientTest {
     @Test
     public void testRosService() throws URISyntaxException, InterruptedException {
     	
-		AddTwoIntService addTwoIntService = new AddTwoIntService();
+		AddTwoIntROS1ServiceProvider addTwoIntService = new AddTwoIntROS1ServiceProvider();
 		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		nodeMainExecutor.execute(addTwoIntService, nodeConfiguration);	
@@ -70,7 +71,7 @@ public class RosServiceClientTest {
 		
 		List<IMotorCodelet> motorCodelets = new ArrayList<>();
 		
-		AddTwoIntServiceClient addTwoIntServiceClient = new AddTwoIntServiceClient("127.0.0.1",new URI("http://127.0.0.1:11311"));
+		AddTwoIntROS1ServiceClient addTwoIntServiceClient = new AddTwoIntROS1ServiceClient("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		motorCodelets.add(addTwoIntServiceClient);
     
 		mecaMind.setIMotorCodelets(motorCodelets);
@@ -101,7 +102,7 @@ public class RosServiceClientTest {
     public void testRosServiceCallTwice() throws URISyntaxException, InterruptedException {
     	
 		SilenceLoggers();
-                AddTwoIntService addTwoIntService = new AddTwoIntService();
+                AddTwoIntROS1ServiceProvider addTwoIntService = new AddTwoIntROS1ServiceProvider();
 		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		nodeMainExecutor.execute(addTwoIntService, nodeConfiguration);	
@@ -112,7 +113,7 @@ public class RosServiceClientTest {
 		
 		List<IMotorCodelet> motorCodelets = new ArrayList<>();
 		
-		AddTwoIntServiceClient addTwoIntServiceClient = new AddTwoIntServiceClient("127.0.0.1",new URI("http://127.0.0.1:11311"));
+		AddTwoIntROS1ServiceClient addTwoIntServiceClient = new AddTwoIntROS1ServiceClient("127.0.0.1",new URI("http://127.0.0.1:11311"));
 		motorCodelets.add(addTwoIntServiceClient);
     
 		mecaMind.setIMotorCodelets(motorCodelets);

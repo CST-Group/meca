@@ -16,7 +16,7 @@ import br.unicamp.meca.system1.codelets.ActivityCodelet;
 import br.unicamp.meca.system1.codelets.ActivityTrackingCodelet;
 import java.util.ArrayList;
 import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
