@@ -16,7 +16,7 @@ java {
     }
 }
 
-version = '0.8.0'
+version = '0.8.1'
 
 repositories {
     // Local flat directories for custom jars
@@ -37,8 +37,8 @@ configurations {
 
 dependencies {
     // CST Desktop API
-    api('com.github.CST-Group:cst-desktop:1.1.1') // This one is for production
-    //api(':cst-desktop:1.1.5-full') // This one is for new developments only 
+    api('com.github.CST-Group:cst-desktop:1.1.2') // This one is for production
+    //api(':cst-desktop:1.1.2-full') // This one is for new developments only 
     
     // JUnit and testing
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
