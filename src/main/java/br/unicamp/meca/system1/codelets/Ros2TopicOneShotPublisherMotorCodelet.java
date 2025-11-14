@@ -30,7 +30,7 @@ public abstract class Ros2TopicOneShotPublisherMotorCodelet<T extends Message>
      * @param messageType the ROS message class type. Ex: std_msgs.String.class
      */
     public Ros2TopicOneShotPublisherMotorCodelet(String id, String topic, Class<T> messageType) {
-        super(topic, messageType);
+        super(id, topic, messageType);
         this.id = id;
     }
 
