@@ -12,8 +12,8 @@ import br.unicamp.meca.system1.codelets.Ros2TopicSubscriberSensoryCodelet;
  */
 public class ROS2_ChatterTopicSubscriber extends Ros2TopicSubscriberSensoryCodelet<StringMessage> {
 
-    public ROS2_ChatterTopicSubscriber(String topic) {
-        super("ChatterTopicSubscriber", topic, StringMessage.class);
+    public ROS2_ChatterTopicSubscriber(String name, String topic) {
+        super(name, topic, StringMessage.class);
     }
 
     @Override

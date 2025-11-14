@@ -27,7 +27,7 @@ public abstract class Ros2TopicPublisherMotorCodelet<T extends Message>
      */
     public Ros2TopicPublisherMotorCodelet(String id, String topic, Class<T> messageType) {
         super(id,topic, messageType);
-        this.id = topic;
+        this.id = id;
     }
 
     /**

@@ -55,11 +55,11 @@ public class ROS2_RosTopicPublisherSubscriberTest {
     public void testRos2Topics() throws InterruptedException {
 
         List<IMotorCodelet> motorCodelets = new ArrayList<>();
-        ROS2_ChatterTopicPublisher chatterTopicPublisher = new ROS2_ChatterTopicPublisher("chatter");
+        ROS2_ChatterTopicPublisher chatterTopicPublisher = new ROS2_ChatterTopicPublisher("chatter", "chatter");
         motorCodelets.add(chatterTopicPublisher);
 
         List<ISensoryCodelet> sensoryCodelets = new ArrayList<>();
-        ROS2_ChatterTopicSubscriber chatterTopicSubscriber = new ROS2_ChatterTopicSubscriber("chatter");
+        ROS2_ChatterTopicSubscriber chatterTopicSubscriber = new ROS2_ChatterTopicSubscriber("chatter","chatter");
         sensoryCodelets.add(chatterTopicSubscriber);
         
         mecaMind.setIMotorCodelets(motorCodelets);

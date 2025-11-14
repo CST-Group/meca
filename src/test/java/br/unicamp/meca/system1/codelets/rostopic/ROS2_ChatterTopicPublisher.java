@@ -11,8 +11,8 @@ import br.unicamp.meca.system1.codelets.Ros2TopicPublisherMotorCodelet;
 
 public class ROS2_ChatterTopicPublisher extends Ros2TopicPublisherMotorCodelet<StringMessage> {
 
-    public ROS2_ChatterTopicPublisher(String topic) {
-        super("ChatterTopicPublisher", topic, StringMessage.class);
+    public ROS2_ChatterTopicPublisher(String name, String topic) {
+        super(name, topic, StringMessage.class);
     }
 
     @Override
