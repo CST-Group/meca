@@ -56,12 +56,19 @@ public class ROS2_ServiceClientTest {
         System.out.println("\nStarting the RosServiceCallOnce test");
         Thread.sleep(5000); //Necessary, so that the mind can shutdown.
         
-        AddTwoIntROS2ServiceClient clientSync = new AddTwoIntROS2ServiceClient("add_two_ints");
+        AddTwoIntROS2ServiceClient clientSync = new AddTwoIntROS2ServiceClient("AddTwoInts", "add_two_ints");
+        //clientSync.setName("AddTwoInts");
+        System.out.println("The default name of the codelet is "+clientSync.getName());
 
         List<IMotorCodelet> motorCodelets = new ArrayList<>();
         motorCodelets.add(clientSync);
         mecaMind.setIMotorCodelets(motorCodelets);
         mecaMind.mountMecaMind();
+        List<Memory> lm = clientSync.getInputs();
+        System.out.println("The number of inputs is "+lm.size());
+        for (Memory m :lm) {
+            System.out.println("The name of memory is "+m.getName());
+        }
         mecaMind.start();
         
 		
@@ -108,8 +115,7 @@ public class ROS2_ServiceClientTest {
     public void testROS2_RosServiceCallTwice() throws InterruptedException {
         System.out.println("\nStarting the RosServiceCallTwice test");
 
-        AddTwoIntROS2ServiceClient clientSync = new AddTwoIntROS2ServiceClient("add_two_ints");
-        //clientSync.start();
+        AddTwoIntROS2ServiceClient clientSync = new AddTwoIntROS2ServiceClient("AddTwoInts","add_two_ints");
 
         List<IMotorCodelet> motorCodelets = new ArrayList<>();
         motorCodelets.add(clientSync);

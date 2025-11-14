@@ -21,8 +21,11 @@ public class AddTwoIntROS2ServiceClient extends Ros2ServiceClientMotorCodelet<Ad
     private volatile long tsReq = 0, tsResp = 0;
     public boolean processing = false;
 
-    public AddTwoIntROS2ServiceClient(String serviceName) {
-        super(serviceName, serviceName, new AddTwoIntsServiceDefinition());
+    public AddTwoIntROS2ServiceClient(String codeletName, String serviceName) {
+        super(codeletName, serviceName, new AddTwoIntsServiceDefinition());
+        // The following line is necessary because the RosServiceClientCodelet from cst-bindings expect the Memory created by mountMecaMind to have the same name as the codelet. 
+        // But mountMecaMind uses the id from Ros2ServiceClientMotorCodelet to create the memory. So, the id and the name must be the same
+        setName(codeletName);
     }
 
     @Override
